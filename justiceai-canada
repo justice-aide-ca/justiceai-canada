@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justice AI - Nouveau dossier de défense</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .form-header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            opacity: 0.9;
+            font-size: 14px;
+        }
+
+        .form-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-group label.required:after {
+            content: " *";
+            color: #e74c3c;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+            border-left: 4px solid #27ae60;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+
+        .disclaimer {
+            margin-top: 20px;
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+        }
+
+        @media (max-width: 480px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .form-body {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1>⚖️ Justice AI Canada</h1>
+            <p>Créez votre dossier de défense - 100% gratuit</p>
+        </div>
+        
+        <div class="form-body">
+            <form id="defenseForm">
+                <div class="form-group">
+                    <label class="required">Nom complet</label>
+                    <input type="text" id="fullName" placeholder="Votre nom" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="required">Courriel</label>
+                    <input type="email" id="email" placeholder="Votre email" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Province</label>
+                        <select id="province" required>
+                            <option value="">Sélectionnez</option>
+                            <option>Ontario</option>
+                            <option>Québec</option>
+                            <option>Colombie-Britannique</option>
+                            <option>Alberta</option>
+                            <option>Manitoba</option>
+                            <option>Saskatchewan</option>
+                            <option>Nouvelle-Écosse</option>
+                            <option>Nouveau-Brunswick</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Type d'accusation</label>
+                        <select id="accusation" required>
+                            <option value="">Sélectionnez</option>
+                            <option>Vol à l'étalage</option>
+                            <option>Fraude</option>
+                            <option>Agression</option>
+                            <option>Menaces</option>
+                            <option>Possession de stupéfiants</option>
+                            <option>Conduite dangereuse</option>
+                            <option>Autre</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="required">Description du problème</label>
+                    <textarea id="description" placeholder="Décrivez votre situation : dates, lieux, témoins, ce qui s'est passé..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Preuves disponibles (optionnel)</label>
+                    <input type="text" id="evidence" placeholder="ex: reçu, photo, témoin, vidéo...">
+                </div>
+                
+                <button type="submit" class="btn-submit">📝 Enregistrer le dossier</button>
+            </form>
+            
+            <div id="result" class="result-box"></div>
+            
+            <div class="disclaimer">
+                ⚠️ Cette plateforme ne remplace pas un avocat. L'IA vous aide à structurer votre défense.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // URL du backend (changez si déployé ailleurs)
+        const API_URL = 'http://localhost:3000/api';
+        
+        document.getElementById('defenseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Récupérer les valeurs
+            const formData = {
+                nom: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                province: document.getElementById('province').value,
+                accusation: document.getElementById('accusation').value,
+                description: document.getElementById('description').value,
+                preuves: document.getElementById('evidence').value
+            };
+            
+            // Afficher le chargement
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result-box show';
+            resultDiv.innerHTML = '<div class="loading">🤖 Génération de votre guide de défense...</div>';
+            
+            try {
+                // 1. Créer le dossier
+                const caseResponse = await fetch(`${API_URL}/cases`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const caseResult = await caseResponse.json();
+                
+                // 2. Générer le guide de défense avec l'IA
+                const guideResponse = await fetch(`${API_URL}/defense/guide`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userInput: formData.description,
+                        province: formData.province,
+                        accusation: formData.accusation
+                    })
+                });
+                
+                const guideResult = await guideResponse.json();
+                
+                // 3. Afficher le résultat
+                resultDiv.innerHTML = `
+                    <h3>✅ Dossier créé !</h3>
+                    <p><strong>Numéro de dossier :</strong> ${caseResult.case?.case_number || 'Généré'}</p>
+                    <hr style="margin: 15px 0;">
+                    <h4>📋 Votre guide de défense</h4>
+                    <div style="white-space: pre-wrap; line-height: 1.6;">${guideResult.data?.guide || guideResult.guide || 'Guide généré avec succès'}</div>
+                    <hr style="margin: 15px 0;">
+                    <p style="font-size: 14px; color: #666;">
+                        💾 Vos informations ont été sauvegardées localement.<br>
+                        📞 Besoin d'aide ? Appelez Aide juridique : 1-855-255-7256
+                    </p>
+                    <button onclick="window.location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Créer un autre dossier
+                    </button>
+                `;
+                
+                // Sauvegarder localement (mode hors ligne)
+                const savedCases = JSON.parse(localStorage.getItem('justice_ai_cases') || '[]');
+                savedCases.push({
+                    ...formData,
+                    case_number: caseResult.case?.case_number,
+                    date: new Date().toISOString(),
+                    guide: guideResult.data?.guide
+                });
+                localStorage.setItem('justice_ai_cases', JSON.stringify(savedCases));
+                
+            } catch (error) {
+                console.error('Erreur:', error);
+                
+                // Mode hors ligne - sauvegarde locale uniquement
+                const offlineId = 'OFFLINE-' + Date.now();
+                const savedCases = JSON.parse(localStorage.getItem('justice_ai_cases') || '[]');
+                savedCases.push({
+                    ...formData,
+                    case_number: offlineId,
+                    date: new Date().toISOString(),
+                    offline: true
+                });
+                localStorage.setItem('justice_ai_cases', JSON.stringify(savedCases));
+                
+                resultDiv.innerHTML = `
+                    <h3>⚠️ Mode hors ligne</h3>
+                    <p>Votre dossier a été sauvegardé localement (numéro: ${offlineId}).</p>
+                    <p>Dès que vous serez connecté à internet, il sera synchronisé automatiquement.</p>
+                    <button onclick="window.location.reload()" style="margin-top: 15px; padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        OK
+                    </button>
+                `;
+            }
+        });
+        
+        // Vérifier si des dossiers existent en local
+        const savedCases = localStorage.getItem('justice_ai_cases');
+        if (savedCases && JSON.parse(savedCases).length > 0) {
+            console.log(`📁 ${JSON.parse(savedCases).length} dossier(s) sauvegardé(s) localement`);
+        }
+    </script>
+</body>
+</html>
