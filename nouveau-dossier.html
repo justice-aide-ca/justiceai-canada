@@ -79,18 +79,15 @@
         </div>
         <div class="form-body">
             <form id="defenseForm">
-                <div class="form-group">
-                    <label class="required">Nom complet</label>
-                    <input type="text" id="fullName" placeholder="Votre nom" required>
-                </div>
-<!-- Ces champs sont supprimés pour l'anonymat -->
                 <div class="form-row">
                     <div class="form-group">
                         <label class="required">Province</label>
                         <select id="province" required>
                             <option value="">Sélectionnez</option>
-                            <option>Ontario</option><option>Québec</option>
-                            <option>Colombie-Britannique</option><option>Alberta</option>
+                            <option>Ontario</option>
+                            <option>Québec</option>
+                            <option>Colombie-Britannique</option>
+                            <option>Alberta</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -122,11 +119,10 @@
         </div>
     </div>
     <script>
-        document.getElementById('defenseForm').addEventListener('submit', async (e) => {
+        document.getElementById('defenseForm').addEventListener('submit', function(e) {
             e.preventDefault();
+            
             const formData = {
-                nom: document.getElementById('fullName').value,
-                email: document.getElementById('email').value,
                 province: document.getElementById('province').value,
                 accusation: document.getElementById('accusation').value,
                 description: document.getElementById('description').value,
@@ -134,48 +130,47 @@
                 case_number: 'CASE-' + Date.now(),
                 date: new Date().toISOString()
             };
+            
             const resultDiv = document.getElementById('result');
             resultDiv.className = 'result-box show';
             resultDiv.innerHTML = '<div class="loading">🤖 Génération de votre guide de défense...</div>';
             
-            // Simuler une réponse IA
-            setTimeout(() => {
-                const guide = `📋 VOTRE GUIDE DE DÉFENSE\n\n` +
-                    `1. RAPPEL DE VOS DROITS (Charte canadienne)\n` +
-                    `   • Droit au silence (article 7)\n` +
-                    `   • Droit à un avocat (article 10b)\n` +
-                    `   • Présomption d'innocence (article 11d)\n\n` +
-                    `2. CONSEILS POUR VOTRE SITUATION\n` +
-                    `   • Rassemblez toutes vos preuves\n` +
-                    `   • Notez les noms des témoins\n` +
-                    `   • Ne parlez pas à la police sans avocat\n\n` +
-                    `3. RESSOURCES GRATUITES\n` +
-                    `   • Aide juridique: 1-855-255-7256\n` +
-                    `   • Pro Bono Ontario: probonoontario.org\n\n` +
-                    `4. PROCHAINES ÉTAPES\n` +
-                    `   • Consultez un avocat\n` +
-                    `   • Préparez votre version écrite\n` +
-                    `   • Demandez la divulgation des preuves`;
+            setTimeout(function() {
+                const guide = '📋 VOTRE GUIDE DE DÉFENSE\n\n' +
+                    '1. RAPPEL DE VOS DROITS (Charte canadienne)\n' +
+                    '   • Droit au silence (article 7)\n' +
+                    '   • Droit à un avocat (article 10b)\n' +
+                    '   • Présomption d\'innocence (article 11d)\n\n' +
+                    '2. CONSEILS POUR VOTRE SITUATION\n' +
+                    '   • Rassemblez toutes vos preuves\n' +
+                    '   • Notez les noms des témoins\n' +
+                    '   • Ne parlez pas à la police sans avocat\n\n' +
+                    '3. RESSOURCES GRATUITES\n' +
+                    '   • Aide juridique: 1-855-255-7256\n' +
+                    '   • Pro Bono Ontario: probonoontario.org\n\n' +
+                    '4. PROCHAINES ÉTAPES\n' +
+                    '   • Consultez un avocat\n' +
+                    '   • Préparez votre version écrite\n' +
+                    '   • Demandez la divulgation des preuves';
                 
                 formData.guide = guide;
                 
-               // Sauvegarder dans localStorage
-const savedCases = JSON.parse(localStorage.getItem('justice_ai_cases') || '[]');
-savedCases.push(formData);
-localStorage.setItem('justice_ai_cases', JSON.stringify(savedCases));
+                // Sauvegarder
+                let savedCases = localStorage.getItem('justice_ai_cases');
+                if (savedCases) {
+                    savedCases = JSON.parse(savedCases);
+                } else {
+                    savedCases = [];
+                }
+                savedCases.push(formData);
+                localStorage.setItem('justice_ai_cases', JSON.stringify(savedCases));
                 
-                resultDiv.innerHTML = `
-                    <h3>✅ Dossier créé !</h3>
-                    <p><strong>Numéro :</strong> ${formData.case_number}</p>
-                    <hr>
-                    <div style="white-space: pre-wrap; line-height: 1.6;">${guide}</div>
-                    <hr>
-                    <button onclick="window.location.href='mes-dossiers.html'" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                       <button onclick="window.location.href='mes-dossiers.html'" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
-    Voir mes dossiers →
-</button> →
-                    </button>
-                `;
+                resultDiv.innerHTML = '<h3>✅ Dossier créé !</h3>' +
+                    '<p><strong>Numéro :</strong> ' + formData.case_number + '</p>' +
+                    '<hr>' +
+                    '<div style="white-space: pre-wrap; line-height: 1.6;">' + guide + '</div>' +
+                    '<hr>' +
+                    '<button onclick="window.location.href=\'mes-dossiers.html\'" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">Voir mes dossiers →</button>';
             }, 1500);
         });
     </script>
