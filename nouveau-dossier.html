@@ -159,10 +159,10 @@
                 
                 formData.guide = guide;
                 
-                // Sauvegarder dans localStorage
-                const savedCases = JSON.parse(localStorage.getItem('justice_ai_cases') || '[]');
-                savedCases.push(formData);
-                localStorage.setItem('justice_ai_cases', JSON.stringify(savedCases));
+               // Sauvegarder dans localStorage
+const savedCases = JSON.parse(localStorage.getItem('justice_ai_cases') || '[]');
+savedCases.push(formData);
+localStorage.setItem('justice_ai_cases', JSON.stringify(savedCases));
                 
                 resultDiv.innerHTML = `
                     <h3>✅ Dossier créé !</h3>
