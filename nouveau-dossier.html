@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justice AI - Nouveau dossier de défense</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .form-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+        }
+        .form-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .form-header h1 { font-size: 28px; margin-bottom: 10px; }
+        .form-body { padding: 30px; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .form-group label.required:after { content: " *"; color: #e74c3c; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .result-box {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+            border-left: 4px solid #27ae60;
+        }
+        .result-box.show { display: block; }
+        .loading { text-align: center; padding: 20px; color: #667eea; }
+        .disclaimer { margin-top: 20px; font-size: 12px; color: #999; text-align: center; }
+        @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div class="form-header">
+            <h1>⚖️ Justice AI Canada</h1>
+            <p>Créez votre dossier de défense - 100% gratuit</p>
+        </div>
+        <div class="form-body">
+            <form id="defenseForm">
+                <div class="form-group">
+                    <label class="required">Nom complet</label>
+                    <input type="text" id="fullName" placeholder="Votre nom" required>
+                </div>
+                <div class="form-group">
+                    <label class="required">Courriel</label>
+                    <input type="email" id="email" placeholder="Votre email" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="required">Province</label>
+                        <select id="province" required>
+                            <option value="">Sélectionnez</option>
+                            <option>Ontario</option><option>Québec</option>
+                            <option>Colombie-Britannique</option><option>Alberta</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="required">Type d'accusation</label>
+                        <select id="accusation" required>
+                            <option value="">Sélectionnez</option>
+                            <option>Vol à l'étalage</option>
+                            <option>Fraude</option>
+                            <option>Agression</option>
+                            <option>Menaces</option>
+                            <option>Autre</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="required">Description du problème</label>
+                    <textarea id="description" rows="5" placeholder="Décrivez votre situation : dates, lieux, témoins..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Preuves disponibles (optionnel)</label>
+                    <input type="text" id="evidence" placeholder="ex: reçu, photo, témoin...">
+                </div>
+                <button type="submit" class="btn-submit">📝 Enregistrer le dossier</button>
+            </form>
+            <div id="result" class="result-box"></div>
+            <div class="disclaimer">
+                ⚠️ Cette plateforme ne remplace pas un avocat. L'IA vous aide à structurer votre défense.
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('defenseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = {
+                nom: document.getElementById('fullName').value,
+                email: document.getElementById('email').value,
+                province: document.getElementById('province').value,
+                accusation: document.getElementById('accusation').value,
+                description: document.getElementById('description').value,
+                preuves: document.getElementById('evidence').value,
+                case_number: 'CASE-' + Date.now(),
+                date: new Date().toISOString()
+            };
+            const resultDiv = document.getElementById('result');
+            resultDiv.className = 'result-box show';
+            resultDiv.innerHTML = '<div class="loading">🤖 Génération de votre guide de défense...</div>';
+            
+            // Simuler une réponse IA
+            setTimeout(() => {
+                const guide = `📋 VOTRE GUIDE DE DÉFENSE\n\n` +
+                    `1. RAPPEL DE VOS DROITS (Charte canadienne)\n` +
+                    `   • Droit au silence (article 7)\n` +
+                    `   • Droit à un avocat (article 10b)\n` +
+                    `   • Présomption d'innocence (article 11d)\n\n` +
+                    `2. CONSEILS POUR VOTRE SITUATION\n` +
+                    `   • Rassemblez toutes vos preuves\n` +
+                    `   • Notez les noms des témoins\n` +
+                    `   • Ne parlez pas à la police sans avocat\n\n` +
+                    `3. RESSOURCES GRATUITES\n` +
+                    `   • Aide juridique: 1-855-255-7256\n` +
+                    `   • Pro Bono Ontario: probonoontario.org\n\n` +
+                    `4. PROCHAINES ÉTAPES\n` +
+                    `   • Consultez un avocat\n` +
+                    `   • Préparez votre version écrite\n` +
+                    `   • Demandez la divulgation des preuves`;
+                
+                formData.guide = guide;
+                
+                // Sauvegarder dans localStorage
+                const savedCases = JSON.parse(localStorage.getItem('justice_ai_cases') || '[]');
+                savedCases.push(formData);
+                localStorage.setItem('justice_ai_cases', JSON.stringify(savedCases));
+                
+                resultDiv.innerHTML = `
+                    <h3>✅ Dossier créé !</h3>
+                    <p><strong>Numéro :</strong> ${formData.case_number}</p>
+                    <hr>
+                    <div style="white-space: pre-wrap; line-height: 1.6;">${guide}</div>
+                    <hr>
+                    <button onclick="window.location.href='mes-dossiers.html'" style="margin-top: 15px; padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                        Voir mes dossiers →
+                    </button>
+                `;
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
