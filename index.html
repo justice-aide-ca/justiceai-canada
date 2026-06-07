@@ -1,21 +1,102 @@
-<section id="dossier" class="formulaire">
-    <h2>Créer un dossier</h2>
-
-   <form onsubmit="enregistrerDossier(event)">
-
-        <label for="nom">Nom complet</label>
-        <input type="text" id="nom" placeholder="Votre nom">
-
-        <label for="email">Courriel</label>
-        <input type="email" id="email" placeholder="votre@email.com">
-
-        <label for="description">Description du problème</label>
-        <textarea id="description" rows="6"
-        placeholder="Décrivez votre situation"></textarea>
-
-        <button type="submit" class="btn">
-            Enregistrer le dossier
-        </button>
-
-
-</section>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Justice AI Canada - Accès gratuit à la justice</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        header { text-align: center; padding: 60px 20px; color: white; }
+        header h1 { font-size: 48px; margin-bottom: 20px; }
+        header p { font-size: 20px; opacity: 0.9; }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .feature-icon { font-size: 48px; margin-bottom: 20px; }
+        .feature-card h3 { color: #333; margin-bottom: 10px; }
+        .feature-card p { color: #666; }
+        .cta-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 40px 0;
+        }
+        .btn {
+            padding: 15px 40px;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary { background: #e74c3c; color: white; }
+        .btn-secondary { background: white; color: #667eea; }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 50px;
+            text-align: center;
+            color: white;
+        }
+        .stat-number { font-size: 36px; font-weight: bold; }
+        footer { text-align: center; padding: 40px; color: white; opacity: 0.8; }
+        @media (max-width: 768px) { header h1 { font-size: 32px; } .stats { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>⚖️ Justice AI Canada</h1>
+            <p>Plateforme gratuite d'aide à la défense pour personnes faussement accusées</p>
+        </header>
+        <div class="features">
+            <div class="feature-card"><div class="feature-icon">📝</div><h3>Créez votre dossier</h3><p>Formulaire simple pour votre défense</p></div>
+            <div class="feature-card"><div class="feature-icon">🤖</div><h3>Assistant IA</h3><p>Guide de défense personnalisé</p></div>
+            <div class="feature-card"><div class="feature-icon">💬</div><h3>Bénévoles</h3><p>Avocats disponibles</p></div>
+            <div class="feature-card"><div class="feature-icon">📱</div><h3>100% gratuit</h3><p>Accessible à tous</p></div>
+        </div>
+        <div class="cta-buttons">
+            <a href="nouveau-dossier.html" class="btn btn-primary">📝 Créer mon dossier</a>
+            <a href="mes-dossiers.html" class="btn btn-secondary">📁 Voir mes dossiers</a>
+        </div>
+        <div class="stats">
+            <div><div class="stat-number" id="caseCount">0</div><div>Dossiers créés</div></div>
+            <div><div class="stat-number" id="userCount">0</div><div>Personnes aidées</div></div>
+            <div><div class="stat-number">5+</div><div>Avocats bénévoles</div></div>
+        </div>
+        <footer><p>Justice AI Canada - Par et pour la communauté</p><p style="font-size:12px;">⚠️ Cette plateforme ne remplace pas un avocat.</p></footer>
+    </div>
+    <script>
+        function updateStats() {
+            const saved = localStorage.getItem('justice_ai_cases');
+            if (saved) { const count = JSON.parse(saved).length;
+                document.getElementById('caseCount').textContent = count;
+                document.getElementById('userCount').textContent = count;
+            }
+        }
+        updateStats();
+    </script>
+</body>
+</html>
