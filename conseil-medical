@@ -5,18 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Health AI – Conseil médical général</title>
     
-    <!-- ===== Librairies externes ===== -->
-    <!-- jsPDF pour l'export PDF -->
+    <!-- Librairies externes -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <!-- Leaflet pour la carte interactive -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #0f4c3a, #1b5e20, #2e7d32);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f0f4f0;
             padding: 20px;
             min-height: 100vh;
             display: flex;
@@ -26,89 +24,264 @@
         }
         .container {
             background: white;
-            padding: 30px;
-            border-radius: 16px;
+            padding: 35px 40px;
+            border-radius: 20px;
             max-width: 820px;
             width: 100%;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.35);
-            max-height: 98vh;
-            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.10);
+            border: 1px solid rgba(0,0,0,0.04);
         }
+        
         /* ===== EN-TÊTE ===== */
-        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        h1 { color: #1b5e20; font-size: 24px; }
-        h1 small { display: block; font-size: 12px; color: #555; font-weight: normal; }
-        .badge-anonyme {
-            background: #e8f5e9; color: #1b5e20; font-size: 11px; font-weight: bold;
-            padding: 3px 14px; border-radius: 20px; display: inline-block;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 6px;
         }
+        .header-left {
+            flex: 1;
+        }
+        .badge-anonyme {
+            display: inline-block;
+            background: #e8f5e9;
+            color: #1b5e20;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 16px;
+            border-radius: 20px;
+            letter-spacing: 0.3px;
+            margin-bottom: 6px;
+        }
+        h1 {
+            color: #1b5e20;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        h1 small {
+            display: block;
+            font-size: 14px;
+            color: #5a6b5a;
+            font-weight: 400;
+            letter-spacing: 0;
+            margin-top: 2px;
+        }
+        .subtitle {
+            color: #5a6b5a;
+            font-size: 14px;
+            margin: 4px 0 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #edf2ed;
+        }
+        
+        /* ===== LANGUES ===== */
         .lang-switch {
-            display: flex; gap: 6px; align-items: center;
+            display: flex;
+            gap: 4px;
+            background: #f0f4f0;
+            padding: 3px;
+            border-radius: 24px;
+            flex-shrink: 0;
         }
         .lang-btn {
-            background: #e8f5e9; border: 1.5px solid #a5d6a7; padding: 4px 12px;
-            border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600;
-            transition: 0.2s; color: #1b5e20;
+            background: transparent;
+            border: none;
+            padding: 5px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: #5a6b5a;
+            transition: 0.2s;
         }
-        .lang-btn.active { background: #1b5e20; color: white; border-color: #1b5e20; }
-        .lang-btn:hover { background: #2e7d32; color: white; }
-        .subtitle { text-align: center; color: #666; font-size: 13px; margin: 4px 0 14px; }
+        .lang-btn.active {
+            background: #1b5e20;
+            color: white;
+        }
+        .lang-btn:hover:not(.active) {
+            background: #dce8dc;
+        }
         
         /* ===== FORMULAIRES ===== */
-        label { display: block; margin-top: 14px; font-weight: 600; color: #1b5e20; font-size: 13px; }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 24px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        label {
+            font-weight: 600;
+            color: #1b5e20;
+            font-size: 13px;
+            margin-bottom: 4px;
+            letter-spacing: 0.2px;
+        }
         select, input, textarea {
-            width: 100%; padding: 9px 12px; margin-top: 3px;
-            border: 1.5px solid #d0d7de; border-radius: 8px; font-size: 13px;
-            background: #fafbfc; font-family: inherit;
+            padding: 10px 14px;
+            border: 1.5px solid #dde5dd;
+            border-radius: 10px;
+            font-size: 14px;
+            background: #fafcfa;
+            transition: 0.2s;
+            font-family: inherit;
+            color: #1e2e1e;
         }
         select:focus, input:focus, textarea:focus {
-            border-color: #2e7d32; box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
-            outline: none; background: #fff;
+            border-color: #1b5e20;
+            box-shadow: 0 0 0 3px rgba(27, 94, 32, 0.10);
+            outline: none;
+            background: white;
         }
-        textarea { height: 60px; resize: vertical; }
-        .pays-info { font-size: 11px; color: #888; text-align: right; margin-top: 2px; }
+        textarea {
+            height: 72px;
+            resize: vertical;
+        }
+        .pays-info {
+            font-size: 11px;
+            color: #8a9a8a;
+            text-align: right;
+            margin-top: 3px;
+        }
         
         /* ===== BOUTONS ===== */
-        .btn-group { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
-        .btn {
-            background: #1b5e20; color: white; border: none; padding: 12px 20px;
-            border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
-            flex: 1; min-width: 120px; transition: 0.2s;
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
         }
-        .btn:hover { background: #2e7d32; }
-        .btn-pdf { background: #c62828; }
-        .btn-pdf:hover { background: #b71c1c; }
-        .btn-carte { background: #1565c0; }
-        .btn-carte:hover { background: #0d47a1; }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            flex: 1;
+            min-width: 130px;
+            letter-spacing: 0.2px;
+        }
+        .btn-primary {
+            background: #1b5e20;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #2e7d32;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(27, 94, 32, 0.25);
+        }
+        .btn-pdf {
+            background: #c62828;
+            color: white;
+        }
+        .btn-pdf:hover {
+            background: #b71c1c;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(198, 40, 40, 0.25);
+        }
+        .btn-carte {
+            background: #1565c0;
+            color: white;
+        }
+        .btn-carte:hover {
+            background: #0d47a1;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(21, 101, 192, 0.25);
+        }
         
         /* ===== RÉSULTAT ===== */
         #conseilResultat {
-            margin-top: 18px; padding: 16px 18px; background: #f6f8fa;
-            border-radius: 10px; border-left: 5px solid #1b5e20;
-            display: none; white-space: pre-wrap; font-size: 13px;
-            line-height: 1.7; color: #1e1e1e; max-height: 450px; overflow-y: auto;
+            margin-top: 20px;
+            padding: 18px 22px;
+            background: #f6f9f6;
+            border-radius: 12px;
+            border-left: 5px solid #1b5e20;
+            display: none;
+            white-space: pre-wrap;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #1e2e1e;
+            max-height: 450px;
+            overflow-y: auto;
         }
-        #conseilResultat.urgence { border-left-color: #c62828; background: #fff5f5; }
-        #conseilResultat.alerte { border-left-color: #f57c00; background: #fff8e1; }
+        #conseilResultat.urgence {
+            border-left-color: #c62828;
+            background: #fff5f5;
+        }
+        #conseilResultat.alerte {
+            border-left-color: #f57c00;
+            background: #fff8e1;
+        }
         
         /* ===== CARTE ===== */
         #carteContainer {
-            display: none; margin-top: 18px; height: 350px;
-            border-radius: 10px; overflow: hidden; border: 1px solid #ddd;
+            display: none;
+            margin-top: 18px;
+            height: 320px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #dde5dd;
         }
-        #carteContainer.active { display: block; }
+        #carteContainer.active {
+            display: block;
+        }
         
         /* ===== AVERTISSEMENT ===== */
-        .warning {
-            font-size: 11px; color: #777; margin-top: 14px; text-align: center;
-            border-top: 1px solid #e9ecef; padding-top: 14px;
+        .warning-box {
+            margin-top: 20px;
+            padding: 14px 20px;
+            background: #fdf8f0;
+            border-radius: 10px;
+            border: 1px solid #f5e6d3;
+            font-size: 13px;
+            color: #6a5a4a;
+            text-align: center;
+            line-height: 1.6;
         }
-        .warning strong { color: #c62828; }
-        @media (max-width: 500px) {
-            .container { padding: 16px; }
-            h1 { font-size: 20px; }
-            .btn { font-size: 13px; padding: 10px; min-width: 80px; }
-            .header { flex-direction: column; align-items: stretch; }
+        .warning-box strong {
+            color: #c62828;
+        }
+        
+        /* ===== FOOTER ===== */
+        .footer {
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #edf2ed;
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            flex-wrap: wrap;
+            font-size: 13px;
+            color: #7a8a7a;
+        }
+        .footer a {
+            color: #4a6a4a;
+            text-decoration: none;
+            transition: 0.2s;
+        }
+        .footer a:hover {
+            color: #1b5e20;
+            text-decoration: underline;
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 650px) {
+            .container { padding: 20px; }
+            .form-grid { grid-template-columns: 1fr; gap: 12px; }
+            .header { flex-direction: column; }
+            h1 { font-size: 22px; }
+            .btn { min-width: 100%; }
+            .footer { gap: 12px; font-size: 12px; }
         }
     </style>
 </head>
@@ -118,135 +291,147 @@
 
     <!-- ===== EN-TÊTE ===== -->
     <div class="header">
-        <div>
+        <div class="header-left">
             <span class="badge-anonyme">🔒 100% ANONYME</span>
             <h1>🏥 Health AI <small>Conseil médical général</small></h1>
         </div>
         <div class="lang-switch">
-            <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">🇫🇷 FR</button>
-            <button class="lang-btn" data-lang="en" onclick="switchLang('en')">🇬🇧 EN</button>
-            <button class="lang-btn" data-lang="es" onclick="switchLang('es')">🇪🇸 ES</button>
+            <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">FR</button>
+            <button class="lang-btn" data-lang="en" onclick="switchLang('en')">EN</button>
+            <button class="lang-btn" data-lang="es" onclick="switchLang('es')">ES</button>
         </div>
     </div>
-    <p class="subtitle" id="subtitle">Basé sur les recommandations officielles &amp; la situation épidémiologique mondiale</p>
+    <p class="subtitle" id="subtitle">Basé sur les recommandations officielles</p>
 
     <!-- ===== FORMULAIRE ===== -->
-    <label for="pays" id="label-pays">📍 Pays</label>
-    <select id="pays">
-        <option value="">Sélectionnez votre pays</option>
-        <optgroup label="🌍 Europe">
-            <option value="fr">🇫🇷 France</option>
-            <option value="de">🇩🇪 Allemagne</option>
-            <option value="es">🇪🇸 Espagne</option>
-            <option value="it">🇮🇹 Italie</option>
-            <option value="pt">🇵🇹 Portugal</option>
-            <option value="nl">🇳🇱 Pays-Bas</option>
-            <option value="be">🇧🇪 Belgique</option>
-            <option value="ch">🇨🇭 Suisse</option>
-            <option value="at">🇦🇹 Autriche</option>
-            <option value="se">🇸🇪 Suède</option>
-            <option value="no">🇳🇴 Norvège</option>
-            <option value="dk">🇩🇰 Danemark</option>
-            <option value="fi">🇫🇮 Finlande</option>
-            <option value="ie">🇮🇪 Irlande</option>
-            <option value="uk">🇬🇧 Royaume-Uni</option>
-            <option value="pl">🇵🇱 Pologne</option>
-            <option value="ua">🇺🇦 Ukraine</option>
-            <option value="ru">🇷🇺 Russie</option>
-        </optgroup>
-        <optgroup label="🌍 Amériques">
-            <option value="ca">🇨🇦 Canada</option>
-            <option value="us">🇺🇸 États-Unis</option>
-            <option value="mx">🇲🇽 Mexique</option>
-            <option value="br">🇧🇷 Brésil</option>
-            <option value="ar">🇦🇷 Argentine</option>
-            <option value="co">🇨🇴 Colombie</option>
-            <option value="pe">🇵🇪 Pérou</option>
-            <option value="ve">🇻🇪 Venezuela</option>
-            <option value="ht">🇭🇹 Haïti</option>
-        </optgroup>
-        <optgroup label="🌍 Afrique">
-            <option value="za">🇿🇦 Afrique du Sud</option>
-            <option value="ng">🇳🇬 Nigeria</option>
-            <option value="ke">🇰🇪 Kenya</option>
-            <option value="gh">🇬🇭 Ghana</option>
-            <option value="ma">🇲🇦 Maroc</option>
-            <option value="tn">🇹🇳 Tunisie</option>
-            <option value="dz">🇩🇿 Algérie</option>
-            <option value="eg">🇪🇬 Égypte</option>
-            <option value="cd">🇨🇩 RDC</option>
-            <option value="sd">🇸🇩 Soudan</option>
-            <option value="ss">🇸🇸 Soudan du Sud</option>
-            <option value="td">🇹🇩 Tchad</option>
-            <option value="cg">🇨🇬 République du Congo</option>
-            <option value="et">🇪🇹 Éthiopie</option>
-            <option value="tz">🇹🇿 Tanzanie</option>
-            <option value="zm">🇿🇲 Zambie</option>
-            <option value="zw">🇿🇼 Zimbabwe</option>
-        </optgroup>
-        <optgroup label="🌍 Asie & Océanie">
-            <option value="au">🇦🇺 Australie</option>
-            <option value="nz">🇳🇿 Nouvelle-Zélande</option>
-            <option value="in">🇮🇳 Inde</option>
-            <option value="pk">🇵🇰 Pakistan</option>
-            <option value="bd">🇧🇩 Bangladesh</option>
-            <option value="lk">🇱🇰 Sri Lanka</option>
-            <option value="th">🇹🇭 Thaïlande</option>
-            <option value="vn">🇻🇳 Viêt Nam</option>
-            <option value="kh">🇰🇭 Cambodge</option>
-            <option value="la">🇱🇦 Laos</option>
-            <option value="mm">🇲🇲 Myanmar</option>
-            <option value="cn">🇨🇳 Chine</option>
-            <option value="jp">🇯🇵 Japon</option>
-            <option value="kr">🇰🇷 Corée du Sud</option>
-            <option value="id">🇮🇩 Indonésie</option>
-            <option value="my">🇲🇾 Malaisie</option>
-            <option value="ph">🇵🇭 Philippines</option>
-            <option value="ye">🇾🇪 Yémen</option>
-            <option value="af">🇦🇫 Afghanistan</option>
-            <option value="ir">🇮🇷 Iran</option>
-            <option value="sa">🇸🇦 Arabie Saoudite</option>
-            <option value="ae">🇦🇪 Émirats Arabes Unis</option>
-            <option value="sy">🇸🇾 Syrie</option>
-            <option value="iq">🇮🇶 Irak</option>
-        </optgroup>
-    </select>
-    <div class="pays-info">🌐 200+ pays couverts</div>
+    <div class="form-grid">
+        <div class="form-group">
+            <label for="pays" id="label-pays">📍 Pays</label>
+            <select id="pays">
+                <option value="">Sélectionnez / Select</option>
+                <optgroup label="🌍 Europe">
+                    <option value="fr">🇫🇷 France</option>
+                    <option value="de">🇩🇪 Allemagne</option>
+                    <option value="es">🇪🇸 Espagne</option>
+                    <option value="it">🇮🇹 Italie</option>
+                    <option value="pt">🇵🇹 Portugal</option>
+                    <option value="nl">🇳🇱 Pays-Bas</option>
+                    <option value="be">🇧🇪 Belgique</option>
+                    <option value="ch">🇨🇭 Suisse</option>
+                    <option value="at">🇦🇹 Autriche</option>
+                    <option value="se">🇸🇪 Suède</option>
+                    <option value="no">🇳🇴 Norvège</option>
+                    <option value="dk">🇩🇰 Danemark</option>
+                    <option value="fi">🇫🇮 Finlande</option>
+                    <option value="ie">🇮🇪 Irlande</option>
+                    <option value="uk">🇬🇧 Royaume-Uni</option>
+                    <option value="pl">🇵🇱 Pologne</option>
+                    <option value="ua">🇺🇦 Ukraine</option>
+                    <option value="ru">🇷🇺 Russie</option>
+                </optgroup>
+                <optgroup label="🌍 Amériques">
+                    <option value="ca">🇨🇦 Canada</option>
+                    <option value="us">🇺🇸 États-Unis</option>
+                    <option value="mx">🇲🇽 Mexique</option>
+                    <option value="br">🇧🇷 Brésil</option>
+                    <option value="ar">🇦🇷 Argentine</option>
+                    <option value="co">🇨🇴 Colombie</option>
+                    <option value="pe">🇵🇪 Pérou</option>
+                    <option value="ve">🇻🇪 Venezuela</option>
+                    <option value="ht">🇭🇹 Haïti</option>
+                </optgroup>
+                <optgroup label="🌍 Afrique">
+                    <option value="za">🇿🇦 Afrique du Sud</option>
+                    <option value="ng">🇳🇬 Nigeria</option>
+                    <option value="ke">🇰🇪 Kenya</option>
+                    <option value="gh">🇬🇭 Ghana</option>
+                    <option value="ma">🇲🇦 Maroc</option>
+                    <option value="tn">🇹🇳 Tunisie</option>
+                    <option value="dz">🇩🇿 Algérie</option>
+                    <option value="eg">🇪🇬 Égypte</option>
+                    <option value="cd">🇨🇩 RDC</option>
+                    <option value="sd">🇸🇩 Soudan</option>
+                    <option value="ss">🇸🇸 Soudan du Sud</option>
+                    <option value="td">🇹🇩 Tchad</option>
+                    <option value="cg">🇨🇬 République du Congo</option>
+                    <option value="et">🇪🇹 Éthiopie</option>
+                    <option value="tz">🇹🇿 Tanzanie</option>
+                    <option value="zm">🇿🇲 Zambie</option>
+                    <option value="zw">🇿🇼 Zimbabwe</option>
+                </optgroup>
+                <optgroup label="🌍 Asie & Océanie">
+                    <option value="au">🇦🇺 Australie</option>
+                    <option value="nz">🇳🇿 Nouvelle-Zélande</option>
+                    <option value="in">🇮🇳 Inde</option>
+                    <option value="pk">🇵🇰 Pakistan</option>
+                    <option value="bd">🇧🇩 Bangladesh</option>
+                    <option value="lk">🇱🇰 Sri Lanka</option>
+                    <option value="th">🇹🇭 Thaïlande</option>
+                    <option value="vn">🇻🇳 Viêt Nam</option>
+                    <option value="kh">🇰🇭 Cambodge</option>
+                    <option value="la">🇱🇦 Laos</option>
+                    <option value="mm">🇲🇲 Myanmar</option>
+                    <option value="cn">🇨🇳 Chine</option>
+                    <option value="jp">🇯🇵 Japon</option>
+                    <option value="kr">🇰🇷 Corée du Sud</option>
+                    <option value="id">🇮🇩 Indonésie</option>
+                    <option value="my">🇲🇾 Malaisie</option>
+                    <option value="ph">🇵🇭 Philippines</option>
+                    <option value="ye">🇾🇪 Yémen</option>
+                    <option value="af">🇦🇫 Afghanistan</option>
+                    <option value="ir">🇮🇷 Iran</option>
+                    <option value="sa">🇸🇦 Arabie Saoudite</option>
+                    <option value="ae">🇦🇪 Émirats Arabes Unis</option>
+                    <option value="sy">🇸🇾 Syrie</option>
+                    <option value="iq">🇮🇶 Irak</option>
+                </optgroup>
+            </select>
+            <div class="pays-info">🌐 200+ pays couverts</div>
+        </div>
 
-    <label for="age" id="label-age">📅 Âge</label>
-    <input type="number" id="age" value="35" min="0" max="120">
+        <div class="form-group">
+            <label for="age" id="label-age">📅 Âge</label>
+            <input type="number" id="age" value="35" min="0" max="120">
+        </div>
 
-    <label for="sexe" id="label-sexe">⚧️ Sexe</label>
-    <select id="sexe">
-        <option value="" id="sexe-default">Sélectionnez</option>
-        <option value="homme" id="sexe-homme">Homme</option>
-        <option value="femme" id="sexe-femme">Femme</option>
-        <option value="autre" id="sexe-autre">Autre</option>
-    </select>
+        <div class="form-group">
+            <label for="sexe" id="label-sexe">⚧️ Sexe</label>
+            <select id="sexe">
+                <option value="" id="sexe-default">Sélectionnez / Select</option>
+                <option value="homme" id="sexe-homme">Homme</option>
+                <option value="femme" id="sexe-femme">Femme</option>
+                <option value="autre" id="sexe-autre">Autre</option>
+            </select>
+        </div>
 
-    <label for="symptomes" id="label-symptomes">🩺 Symptôme principal</label>
-    <select id="symptomes">
-        <option value="" id="sym-default">Sélectionnez</option>
-        <option value="fievre" id="sym-fievre">Fièvre</option>
-        <option value="toux" id="sym-toux">Toux</option>
-        <option value="maux_de_tete" id="sym-tete">Maux de tête</option>
-        <option value="douleur_thoracique" id="sym-thorax">Douleur thoracique</option>
-        <option value="essoufflement" id="sym-essoufflement">Essoufflement</option>
-        <option value="nausees" id="sym-nausees">Nausées</option>
-        <option value="diarrhee" id="sym-diarrhee">Diarrhée</option>
-        <option value="douleur_articulaire" id="sym-articulations">Douleurs articulaires</option>
-        <option value="fatigue" id="sym-fatigue">Fatigue intense</option>
-        <option value="douleur_abdominale" id="sym-abdomen">Douleur abdominale</option>
-    </select>
+        <div class="form-group">
+            <label for="symptomes" id="label-symptomes">🩺 Symptômes</label>
+            <select id="symptomes">
+                <option value="" id="sym-default">Sélectionnez / Select</option>
+                <option value="fievre" id="sym-fievre">Fièvre</option>
+                <option value="toux" id="sym-toux">Toux</option>
+                <option value="maux_de_tete" id="sym-tete">Maux de tête</option>
+                <option value="douleur_thoracique" id="sym-thorax">Douleur thoracique</option>
+                <option value="essoufflement" id="sym-essoufflement">Essoufflement</option>
+                <option value="nausees" id="sym-nausees">Nausées</option>
+                <option value="diarrhee" id="sym-diarrhee">Diarrhée</option>
+                <option value="douleur_articulaire" id="sym-articulations">Douleurs articulaires</option>
+                <option value="fatigue" id="sym-fatigue">Fatigue intense</option>
+                <option value="douleur_abdominale" id="sym-abdomen">Douleur abdominale</option>
+            </select>
+        </div>
 
-    <label for="description" id="label-description">📝 Description des symptômes</label>
-    <textarea id="description" placeholder="Décrivez vos symptômes en détail..."></textarea>
+        <div class="form-group full-width">
+            <label for="description" id="label-description">📝 Description des symptômes</label>
+            <textarea id="description" placeholder="Décrivez vos symptômes en détail..."></textarea>
+        </div>
+    </div>
 
     <!-- ===== BOUTONS ===== -->
     <div class="btn-group">
-        <button class="btn" id="obtenirConseil">🔍 Obtenir un conseil</button>
-        <button class="btn btn-pdf" id="exportPDF">📄 Exporter en PDF</button>
-        <button class="btn btn-carte" id="toggleCarte">🗺️ Afficher la carte</button>
+        <button class="btn btn-primary" id="obtenirConseil">🔍 Obtenir un conseil médical</button>
+        <button class="btn btn-pdf" id="exportPDF">📄 PDF</button>
+        <button class="btn btn-carte" id="toggleCarte">🗺️ Carte</button>
     </div>
 
     <!-- ===== RÉSULTAT ===== -->
@@ -256,9 +441,18 @@
     <div id="carteContainer"></div>
 
     <!-- ===== AVERTISSEMENT ===== -->
-    <div class="warning" id="warning">
+    <div class="warning-box" id="warning">
         ⚠️ Ce conseil ne remplace pas une consultation médicale.<br>
-        En cas d'urgence, appelez le <strong>15</strong> (France) ou le <strong>911</strong> (Canada/États-Unis).
+        ⚠️ En cas d'urgence, appelez le <strong>15</strong> (France) ou le <strong>911</strong> (Canada/États-Unis).
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <div class="footer">
+        <span>🏥 Health AI</span>
+        <a href="#">À propos / About</a>
+        <a href="#">Confidentialité / Privacy</a>
+        <a href="#">Conditions / Terms</a>
+        <a href="#">Contact</a>
     </div>
 
 </div>
@@ -269,17 +463,17 @@
     // ============================================================
     const traductions = {
         fr: {
-            subtitle: 'Basé sur les recommandations officielles & la situation épidémiologique mondiale',
+            subtitle: 'Basé sur les recommandations officielles',
             'label-pays': '📍 Pays',
             'label-age': '📅 Âge',
             'label-sexe': '⚧️ Sexe',
-            'label-symptomes': '🩺 Symptôme principal',
+            'label-symptomes': '🩺 Symptômes',
             'label-description': '📝 Description des symptômes',
-            'sexe-default': 'Sélectionnez',
+            'sexe-default': 'Sélectionnez / Select',
             'sexe-homme': 'Homme',
             'sexe-femme': 'Femme',
             'sexe-autre': 'Autre',
-            'sym-default': 'Sélectionnez',
+            'sym-default': 'Sélectionnez / Select',
             'sym-fievre': 'Fièvre',
             'sym-toux': 'Toux',
             'sym-tete': 'Maux de tête',
@@ -290,17 +484,17 @@
             'sym-articulations': 'Douleurs articulaires',
             'sym-fatigue': 'Fatigue intense',
             'sym-abdomen': 'Douleur abdominale',
-            'btn-conseil': '🔍 Obtenir un conseil',
-            'btn-pdf': '📄 Exporter en PDF',
-            'btn-carte': '🗺️ Afficher la carte',
-            'warning': '⚠️ Ce conseil ne remplace pas une consultation médicale.\nEn cas d\'urgence, appelez le 15 (France) ou le 911 (Canada/États-Unis).'
+            'btn-conseil': '🔍 Obtenir un conseil médical',
+            'btn-pdf': '📄 PDF',
+            'btn-carte': '🗺️ Carte',
+            'warning': '⚠️ Ce conseil ne remplace pas une consultation médicale.\n⚠️ En cas d\'urgence, appelez le 15 (France) ou le 911 (Canada/États-Unis).'
         },
         en: {
-            subtitle: 'Based on official recommendations & global epidemiological situation',
+            subtitle: 'Based on official recommendations',
             'label-pays': '📍 Country',
             'label-age': '📅 Age',
             'label-sexe': '⚧️ Sex',
-            'label-symptomes': '🩺 Main symptom',
+            'label-symptomes': '🩺 Symptoms',
             'label-description': '📝 Symptom description',
             'sexe-default': 'Select',
             'sexe-homme': 'Male',
@@ -317,17 +511,17 @@
             'sym-articulations': 'Joint pain',
             'sym-fatigue': 'Severe fatigue',
             'sym-abdomen': 'Abdominal pain',
-            'btn-conseil': '🔍 Get advice',
-            'btn-pdf': '📄 Export to PDF',
-            'btn-carte': '🗺️ Show map',
-            'warning': '⚠️ This advice does not replace a medical consultation.\nIn case of emergency, call 911 (US/Canada) or 112 (Europe).'
+            'btn-conseil': '🔍 Get medical advice',
+            'btn-pdf': '📄 PDF',
+            'btn-carte': '🗺️ Map',
+            'warning': '⚠️ This advice does not replace a medical consultation.\n⚠️ In case of emergency, call 911 (US/Canada) or 112 (Europe).'
         },
         es: {
-            subtitle: 'Basado en recomendaciones oficiales y la situación epidemiológica mundial',
+            subtitle: 'Basado en recomendaciones oficiales',
             'label-pays': '📍 País',
             'label-age': '📅 Edad',
             'label-sexe': '⚧️ Sexo',
-            'label-symptomes': '🩺 Síntoma principal',
+            'label-symptomes': '🩺 Síntomas',
             'label-description': '📝 Descripción de los síntomas',
             'sexe-default': 'Seleccione',
             'sexe-homme': 'Hombre',
@@ -344,10 +538,10 @@
             'sym-articulations': 'Dolor en las articulaciones',
             'sym-fatigue': 'Fatiga intensa',
             'sym-abdomen': 'Dolor abdominal',
-            'btn-conseil': '🔍 Obtener consejo',
-            'btn-pdf': '📄 Exportar a PDF',
-            'btn-carte': '🗺️ Mostrar mapa',
-            'warning': '⚠️ Este consejo no sustituye una consulta médica.\nEn caso de emergencia, llame al 911 (EE.UU./Canadá) o al 112 (Europa).'
+            'btn-conseil': '🔍 Obtener consejo médico',
+            'btn-pdf': '📄 PDF',
+            'btn-carte': '🗺️ Mapa',
+            'warning': '⚠️ Este consejo no sustituye una consulta médica.\n⚠️ En caso de emergencia, llame al 911 (EE.UU./Canadá) o al 112 (Europa).'
         }
     };
 
@@ -431,8 +625,6 @@
         'ph': { risque: 'modéré', alerte: '⚠️ Risque vectoriel.' },
         'sy': { risque: 'élevé', alerte: '⚠️ Accès aux soins très limité.' },
         'iq': { risque: 'élevé', alerte: '⚠️ Risque choléra et accès aux soins limité.' },
-        'ly': { risque: 'modéré', alerte: '⚠️ Risque épidémique.' },
-        'lb': { risque: 'modéré', alerte: '⚠️ Risque épidémique (pays hôte de réfugiés).' },
     };
 
     const conseilsSymptomes = {
@@ -466,7 +658,7 @@
         'th':'Thaïlande','vn':'Viêt Nam','kh':'Cambodge','la':'Laos','mm':'Myanmar',
         'cn':'Chine','jp':'Japon','kr':'Corée du Sud','id':'Indonésie','my':'Malaisie',
         'ph':'Philippines','ye':'Yémen','af':'Afghanistan','ir':'Iran','sa':'Arabie Saoudite',
-        'ae':'Émirats Arabes Unis','sy':'Syrie','iq':'Irak','ly':'Libye','lb':'Liban'
+        'ae':'Émirats Arabes Unis','sy':'Syrie','iq':'Irak'
     };
 
     // ============================================================
@@ -551,7 +743,6 @@
             alert('Veuillez d\'abord obtenir un conseil médical.');
             return;
         }
-
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF('p', 'mm', 'a4');
         const lines = doc.splitTextToSize(dernierConseil, 180);
@@ -561,7 +752,7 @@
     });
 
     // ============================================================
-    // 5. CARTE INTERACTIVE (Leaflet)
+    // 5. CARTE INTERACTIVE
     // ============================================================
     let mapInitialized = false;
     let map = null;
@@ -576,7 +767,6 @@
                 attribution: '© OpenStreetMap'
             }).addTo(map);
 
-            // Marqueurs pour les pays à risque
             const paysRisque = {
                 'cd': { lat: -4.038, lng: 21.759, label: 'RDC - Choléra' },
                 'sd': { lat: 15.500, lng: 32.560, label: 'Soudan - Choléra' },
@@ -609,12 +799,7 @@
                 'iq': { lat: 33.223, lng: 43.679, label: 'Irak - Crise humanitaire' },
             };
 
-            // Couleurs par risque
-            const couleurs = {
-                'élevé': 'red',
-                'modéré': 'orange',
-                'faible': 'green'
-            };
+            const couleurs = { 'élevé': 'red', 'modéré': 'orange', 'faible': 'green' };
 
             for (const [code, data] of Object.entries(paysRisque)) {
                 const epi = epidemiologie[code] || { risque: 'faible' };
