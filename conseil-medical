@@ -14,7 +14,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f0f4f0;
+            background: linear-gradient(135deg, #0f4c3a, #1b5e20, #2e7d32);
             padding: 20px;
             min-height: 100vh;
             display: flex;
@@ -28,8 +28,8 @@
             border-radius: 20px;
             max-width: 820px;
             width: 100%;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.10);
-            border: 1px solid rgba(0,0,0,0.04);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.08);
         }
         
         /* ===== EN-TÊTE ===== */
@@ -41,9 +41,7 @@
             gap: 12px;
             margin-bottom: 6px;
         }
-        .header-left {
-            flex: 1;
-        }
+        .header-left { flex: 1; }
         .badge-anonyme {
             display: inline-block;
             background: #e8f5e9;
@@ -111,13 +109,8 @@
             grid-template-columns: 1fr 1fr;
             gap: 16px 24px;
         }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .form-group.full-width {
-            grid-column: 1 / -1;
-        }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: 1 / -1; }
         label {
             font-weight: 600;
             color: #1b5e20;
@@ -141,10 +134,7 @@
             outline: none;
             background: white;
         }
-        textarea {
-            height: 72px;
-            resize: vertical;
-        }
+        textarea { height: 72px; resize: vertical; }
         .pays-info {
             font-size: 11px;
             color: #8a9a8a;
@@ -232,9 +222,7 @@
             overflow: hidden;
             border: 1px solid #dde5dd;
         }
-        #carteContainer.active {
-            display: block;
-        }
+        #carteContainer.active { display: block; }
         
         /* ===== AVERTISSEMENT ===== */
         .warning-box {
@@ -248,9 +236,7 @@
             text-align: center;
             line-height: 1.6;
         }
-        .warning-box strong {
-            color: #c62828;
-        }
+        .warning-box strong { color: #c62828; }
         
         /* ===== FOOTER ===== */
         .footer {
@@ -391,16 +377,16 @@
 
         <div class="form-group">
             <label for="age" id="label-age">📅 Âge</label>
-            <input type="number" id="age" value="35" min="0" max="120">
+            <input type="number" id="age" value="61" min="0" max="120">
         </div>
 
         <div class="form-group">
             <label for="sexe" id="label-sexe">⚧️ Sexe</label>
             <select id="sexe">
                 <option value="" id="sexe-default">Sélectionnez / Select</option>
-                <option value="homme" id="sexe-homme">Homme</option>
-                <option value="femme" id="sexe-femme">Femme</option>
-                <option value="autre" id="sexe-autre">Autre</option>
+                <option value="homme" id="sexe-homme">Homme / Male</option>
+                <option value="femme" id="sexe-femme">Femme / Female</option>
+                <option value="autre" id="sexe-autre">Autre / Other</option>
             </select>
         </div>
 
@@ -408,16 +394,17 @@
             <label for="symptomes" id="label-symptomes">🩺 Symptômes</label>
             <select id="symptomes">
                 <option value="" id="sym-default">Sélectionnez / Select</option>
-                <option value="fievre" id="sym-fievre">Fièvre</option>
-                <option value="toux" id="sym-toux">Toux</option>
-                <option value="maux_de_tete" id="sym-tete">Maux de tête</option>
-                <option value="douleur_thoracique" id="sym-thorax">Douleur thoracique</option>
-                <option value="essoufflement" id="sym-essoufflement">Essoufflement</option>
-                <option value="nausees" id="sym-nausees">Nausées</option>
-                <option value="diarrhee" id="sym-diarrhee">Diarrhée</option>
-                <option value="douleur_articulaire" id="sym-articulations">Douleurs articulaires</option>
-                <option value="fatigue" id="sym-fatigue">Fatigue intense</option>
-                <option value="douleur_abdominale" id="sym-abdomen">Douleur abdominale</option>
+                <option value="fievre" id="sym-fievre">Fièvre / Fever</option>
+                <option value="toux" id="sym-toux">Toux / Cough</option>
+                <option value="maux_de_tete" id="sym-tete">Maux de tête / Headache</option>
+                <option value="douleur_thoracique" id="sym-thorax">Douleur thoracique / Chest pain</option>
+                <option value="essoufflement" id="sym-essoufflement">Essoufflement / Shortness of breath</option>
+                <option value="nausees" id="sym-nausees">Nausées / Nausea</option>
+                <option value="diarrhee" id="sym-diarrhee">Diarrhée / Diarrhea</option>
+                <option value="douleur_articulaire" id="sym-articulations">Douleurs articulaires / Joint pain</option>
+                <option value="fatigue" id="sym-fatigue">Fatigue intense / Severe fatigue</option>
+                <option value="douleur_abdominale" id="sym-abdomen">Douleur abdominale / Abdominal pain</option>
+                <option value="probleme_peau" id="sym-peau">Problème de peau / Skin problem</option>
             </select>
         </div>
 
@@ -470,20 +457,21 @@
             'label-symptomes': '🩺 Symptômes',
             'label-description': '📝 Description des symptômes',
             'sexe-default': 'Sélectionnez / Select',
-            'sexe-homme': 'Homme',
-            'sexe-femme': 'Femme',
-            'sexe-autre': 'Autre',
+            'sexe-homme': 'Homme / Male',
+            'sexe-femme': 'Femme / Female',
+            'sexe-autre': 'Autre / Other',
             'sym-default': 'Sélectionnez / Select',
-            'sym-fievre': 'Fièvre',
-            'sym-toux': 'Toux',
-            'sym-tete': 'Maux de tête',
-            'sym-thorax': 'Douleur thoracique',
-            'sym-essoufflement': 'Essoufflement',
-            'sym-nausees': 'Nausées',
-            'sym-diarrhee': 'Diarrhée',
-            'sym-articulations': 'Douleurs articulaires',
-            'sym-fatigue': 'Fatigue intense',
-            'sym-abdomen': 'Douleur abdominale',
+            'sym-fievre': 'Fièvre / Fever',
+            'sym-toux': 'Toux / Cough',
+            'sym-tete': 'Maux de tête / Headache',
+            'sym-thorax': 'Douleur thoracique / Chest pain',
+            'sym-essoufflement': 'Essoufflement / Shortness of breath',
+            'sym-nausees': 'Nausées / Nausea',
+            'sym-diarrhee': 'Diarrhée / Diarrhea',
+            'sym-articulations': 'Douleurs articulaires / Joint pain',
+            'sym-fatigue': 'Fatigue intense / Severe fatigue',
+            'sym-abdomen': 'Douleur abdominale / Abdominal pain',
+            'sym-peau': 'Problème de peau / Skin problem',
             'btn-conseil': '🔍 Obtenir un conseil médical',
             'btn-pdf': '📄 PDF',
             'btn-carte': '🗺️ Carte',
@@ -511,6 +499,7 @@
             'sym-articulations': 'Joint pain',
             'sym-fatigue': 'Severe fatigue',
             'sym-abdomen': 'Abdominal pain',
+            'sym-peau': 'Skin problem',
             'btn-conseil': '🔍 Get medical advice',
             'btn-pdf': '📄 PDF',
             'btn-carte': '🗺️ Map',
@@ -538,6 +527,7 @@
             'sym-articulations': 'Dolor en las articulaciones',
             'sym-fatigue': 'Fatiga intensa',
             'sym-abdomen': 'Dolor abdominal',
+            'sym-peau': 'Problema de piel',
             'btn-conseil': '🔍 Obtener consejo médico',
             'btn-pdf': '📄 PDF',
             'btn-carte': '🗺️ Mapa',
@@ -574,6 +564,7 @@
         document.getElementById('sym-articulations').textContent = t['sym-articulations'];
         document.getElementById('sym-fatigue').textContent = t['sym-fatigue'];
         document.getElementById('sym-abdomen').textContent = t['sym-abdomen'];
+        document.getElementById('sym-peau').textContent = t['sym-peau'];
         document.getElementById('obtenirConseil').textContent = t['btn-conseil'];
         document.getElementById('exportPDF').textContent = t['btn-pdf'];
         document.getElementById('toggleCarte').textContent = t['btn-carte'];
@@ -627,17 +618,21 @@
         'iq': { risque: 'élevé', alerte: '⚠️ Risque choléra et accès aux soins limité.' },
     };
 
+    // ============================================================
+    // 3. CONSEILS PAR SYMPTÔME (avec problème de peau)
+    // ============================================================
     const conseilsSymptomes = {
-        'fievre': '📌 La fièvre peut indiquer une infection. Consultez si persistance > 48h.',
-        'toux': '📌 Repos, hydratation. Consultez si essoufflement.',
-        'maux_de_tete': '📌 Repos, hydratation. Consultez si intenses.',
-        'douleur_thoracique': '⚠️ URGENCE – Consultez immédiatement.',
-        'essoufflement': '⚠️ URGENCE – Appelez le 15/911.',
-        'nausees': '📌 Alimentation légère. Consultez si vomissements.',
-        'diarrhee': '📌 Hydratation essentielle. Consultez si sévère.',
-        'douleur_articulaire': '📌 Repos, antalgiques. Consultez si fièvre.',
-        'fatigue': '📌 Repos. Consultez si persistante.',
-        'douleur_abdominale': '📌 Surveillez l\'évolution. Consultez si intense.',
+        'fievre': '📌 La fièvre peut indiquer une infection. Consultez si persistance > 48h. Prenez votre température 2 fois par jour. Hydratez-vous régulièrement. En cas de fièvre > 39°C, consultez rapidement.',
+        'toux': '📌 Repos, hydratation. Consultez si essoufflement ou fièvre élevée. Évitez l\'automédication avec des antitussifs sans avis médical. Si la toux persiste plus de 7 jours, une consultation s\'impose.',
+        'maux_de_tete': '📌 Repos, hydratation. Consultez si intenses ou accompagnés de raideur de la nuque, troubles visuels ou nausées. Évitez l\'exposition à la lumière vive.',
+        'douleur_thoracique': '⚠️ URGENCE – Consultez immédiatement. Appelez le 15 (France) ou le 911 (Canada/US). Ne conduisez pas vous-même.',
+        'essoufflement': '⚠️ URGENCE – Appelez le 15/911 si soudain ou sévère. En attendant les secours, asseyez-vous en position semi-assise.',
+        'nausees': '📌 Alimentation légère, fractionnée. Évitez les aliments gras et épicés. Consultez si vomissements répétés ou déshydratation.',
+        'diarrhee': '📌 Hydratation essentielle (eau, bouillon, solution de réhydratation orale). En zone à risque de choléra, consultez rapidement. Surveillez les signes de déshydratation.',
+        'douleur_articulaire': '📌 Repos des articulations douloureuses. Antalgiques en vente libre si besoin. Consultez si fièvre associée, gonflement ou rougeur.',
+        'fatigue': '📌 Repos, hydratation, alimentation équilibrée. Si persistante > 2 semaines ou accompagnée d\'autres symptômes (fièvre, perte de poids), consultez.',
+        'douleur_abdominale': '📌 Surveillez l\'évolution. Si intense, localisée en bas à droite, ou accompagnée de fièvre, nausées ou vomissements → consultez sans délai.',
+        'probleme_peau': '📌 Éruption cutanée, démangeaisons ou lésions : évitez de gratter pour limiter les surinfections. Nettoyez doucement à l\'eau tiède avec un savon doux. Si lésion étendue, fébrile ou purulente, consultez un médecin. En zone tropicale, certaines éruptions peuvent être des signes de dengue, chikungunya ou méningite.',
     };
 
     const paysVectoriels = ['pk','so','ke','mu','fr','it','in','bd','lk','th','mx','br','ar','co','pe','id','my','ph','ve','ht'];
@@ -662,7 +657,7 @@
     };
 
     // ============================================================
-    // 3. LOGIQUE PRINCIPALE
+    // 4. LOGIQUE PRINCIPALE
     // ============================================================
     let dernierConseil = '';
 
@@ -681,13 +676,13 @@
 
         let conseil = '';
         conseil += '🏥 HEALTH AI – CONSEIL MÉDICAL\n';
-        conseil += '═'.repeat(44) + '\n';
+        conseil += '═'.repeat(50) + '\n';
         conseil += '📌 Pays : ' + paysNom + '\n';
         conseil += '📅 Âge : ' + age + ' ans\n';
         conseil += '⚧️ Sexe : ' + sexe + '\n';
         conseil += '🩺 Symptôme : ' + symptomeNom + '\n';
         conseil += '📝 Description : ' + description + '\n';
-        conseil += '═'.repeat(44) + '\n\n';
+        conseil += '═'.repeat(50) + '\n\n';
 
         conseil += '📊 SITUATION ÉPIDÉMIOLOGIQUE (' + paysNom + ')\n';
         conseil += dataEpi.alerte + '\n\n';
@@ -702,25 +697,36 @@
             conseil += '🔴 RISQUE ÉLEVÉ – Vigilance maximale.\n';
             conseil += '   • Consultez un médecin sans délai.\n';
             conseil += '   • En cas de diarrhée aqueuse, hydratez-vous.\n';
+            conseil += '   • Évitez l\'automédication.\n';
         } else if (dataEpi.risque === 'modéré') {
             conseil += '🟡 RISQUE MODÉRÉ – Restez attentif.\n';
             conseil += '   • Consultez si les symptômes persistent > 48h.\n';
+            conseil += '   • En zone vectorielle, protégez-vous des piqûres.\n';
         } else {
             conseil += '🟢 RISQUE FAIBLE – Situation stable.\n';
             conseil += '   • Suivez les recommandations habituelles.\n';
+            conseil += '   • Consultez si les symptômes s\'aggravent.\n';
         }
 
         if (paysVectoriels.includes(codePays)) {
-            conseil += '\n🦟 ALERTE VECTORIELLE :\n   • Protégez-vous des moustiques.\n';
+            conseil += '\n🦟 ALERTE VECTORIELLE :\n   • Protégez-vous des moustiques (vêtements longs, répulsifs).\n   • Éliminez les eaux stagnantes.\n';
         }
         if (paysCholera.includes(codePays)) {
-            conseil += '\n💧 ALERTE CHOLÉRA :\n   • Buvez de l\'eau potable.\n   • Lavez-vous les mains.\n';
+            conseil += '\n💧 ALERTE CHOLÉRA :\n   • Buvez de l\'eau potable ou bouillie.\n   • Lavez-vous les mains régulièrement.\n   • En cas de diarrhée aqueuse sévère → URGENCE.\n';
         }
         if (paysPaludisme.includes(codePays)) {
-            conseil += '\n🦟 ALERTE PALUDISME :\n   • Protection anti-moustique.\n   • Consultez en cas de fièvre.\n';
+            conseil += '\n🦟 ALERTE PALUDISME :\n   • Protection anti-moustique indispensable.\n   • En cas de fièvre, consultez rapidement pour un test.\n';
         }
 
-        conseil += '\n' + '═'.repeat(44) + '\n';
+        // Conseil spécifique peau si risque vectoriel
+        if (symptome === 'probleme_peau' && paysVectoriels.includes(codePays)) {
+            conseil += '\n🔴 ALERTE SPÉCIFIQUE :\n';
+            conseil += '   • Les problèmes de peau dans les zones tropicales peuvent être des signes de dengue ou chikungunya.\n';
+            conseil += '   • Surveillez l\'apparition de fièvre ou de douleurs articulaires.\n';
+            conseil += '   • Consultez rapidement si éruption associée à de la fièvre.\n';
+        }
+
+        conseil += '\n' + '═'.repeat(50) + '\n';
         conseil += '⚠️ Ce conseil ne remplace pas une consultation médicale.\n';
         conseil += '📞 Urgence : 15 (France) / 911 (Canada/US)';
 
@@ -736,23 +742,27 @@
     });
 
     // ============================================================
-    // 4. EXPORT PDF
+    // 5. EXPORT PDF
     // ============================================================
     document.getElementById('exportPDF').addEventListener('click', function() {
         if (!dernierConseil) {
             alert('Veuillez d\'abord obtenir un conseil médical.');
             return;
         }
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        const lines = doc.splitTextToSize(dernierConseil, 180);
-        doc.setFontSize(10);
-        doc.text(lines, 15, 20);
-        doc.save('conseil_medical_health_ai.pdf');
+        try {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const lines = doc.splitTextToSize(dernierConseil, 180);
+            doc.setFontSize(10);
+            doc.text(lines, 15, 20);
+            doc.save('conseil_medical_health_ai.pdf');
+        } catch(e) {
+            alert('Erreur lors de la génération du PDF. Vérifiez que la librairie jsPDF est chargée.');
+        }
     });
 
     // ============================================================
-    // 5. CARTE INTERACTIVE
+    // 6. CARTE INTERACTIVE
     // ============================================================
     let mapInitialized = false;
     let map = null;
@@ -762,68 +772,77 @@
         container.classList.toggle('active');
         
         if (container.classList.contains('active') && !mapInitialized) {
-            map = L.map('carteContainer').setView([20, 0], 2);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap'
-            }).addTo(map);
+            try {
+                map = L.map('carteContainer').setView([20, 0], 2);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
 
-            const paysRisque = {
-                'cd': { lat: -4.038, lng: 21.759, label: 'RDC - Choléra' },
-                'sd': { lat: 15.500, lng: 32.560, label: 'Soudan - Choléra' },
-                'ss': { lat: 7.862, lng: 29.694, label: 'Soudan du Sud - Choléra' },
-                'td': { lat: 15.454, lng: 18.732, label: 'Tchad - Choléra' },
-                'cg': { lat: -4.263, lng: 15.243, label: 'Congo - Choléra' },
-                'pk': { lat: 30.375, lng: 69.345, label: 'Pakistan - Chikungunya' },
-                'ke': { lat: -1.286, lng: 36.817, label: 'Kenya - Chikungunya' },
-                'br': { lat: -14.235, lng: -51.925, label: 'Brésil - Chikungunya' },
-                'ht': { lat: 18.971, lng: -72.285, label: 'Haïti - Choléra' },
-                'ye': { lat: 15.553, lng: 48.516, label: 'Yémen - Paludisme' },
-                'af': { lat: 33.939, lng: 67.710, label: 'Afghanistan - Paludisme' },
-                'et': { lat: 9.145, lng: 40.490, label: 'Éthiopie - Choléra' },
-                'tz': { lat: -6.369, lng: 34.889, label: 'Tanzanie - Choléra' },
-                'zm': { lat: -13.134, lng: 27.849, label: 'Zambie - Choléra' },
-                'zw': { lat: -19.015, lng: 29.155, label: 'Zimbabwe - Choléra' },
-                'so': { lat: 5.152, lng: 46.200, label: 'Somalie - Chikungunya' },
-                'mu': { lat: -20.348, lng: 57.552, label: 'Maurice - Chikungunya' },
-                'in': { lat: 20.594, lng: 78.963, label: 'Inde - Chikungunya' },
-                'bd': { lat: 23.685, lng: 90.356, label: 'Bangladesh - Chikungunya' },
-                'lk': { lat: 7.873, lng: 80.772, label: 'Sri Lanka - Chikungunya' },
-                'th': { lat: 15.870, lng: 100.993, label: 'Thaïlande - Chikungunya' },
-                'id': { lat: -0.789, lng: 113.921, label: 'Indonésie - Risque vectoriel' },
-                'ph': { lat: 12.880, lng: 121.774, label: 'Philippines - Risque vectoriel' },
-                'vn': { lat: 14.058, lng: 108.277, label: 'Viêt Nam - Paludisme' },
-                'kh': { lat: 12.565, lng: 104.991, label: 'Cambodge - Paludisme' },
-                'la': { lat: 19.856, lng: 102.495, label: 'Laos - Paludisme' },
-                'mm': { lat: 21.914, lng: 95.956, label: 'Myanmar - Paludisme' },
-                'sy': { lat: 34.802, lng: 38.997, label: 'Syrie - Crise humanitaire' },
-                'iq': { lat: 33.223, lng: 43.679, label: 'Irak - Crise humanitaire' },
-            };
+                const paysRisque = {
+                    'cd': { lat: -4.038, lng: 21.759, label: 'RDC - Choléra' },
+                    'sd': { lat: 15.500, lng: 32.560, label: 'Soudan - Choléra' },
+                    'ss': { lat: 7.862, lng: 29.694, label: 'Soudan du Sud - Choléra' },
+                    'td': { lat: 15.454, lng: 18.732, label: 'Tchad - Choléra' },
+                    'cg': { lat: -4.263, lng: 15.243, label: 'Congo - Choléra' },
+                    'pk': { lat: 30.375, lng: 69.345, label: 'Pakistan - Chikungunya' },
+                    'ke': { lat: -1.286, lng: 36.817, label: 'Kenya - Chikungunya' },
+                    'br': { lat: -14.235, lng: -51.925, label: 'Brésil - Chikungunya' },
+                    'ht': { lat: 18.971, lng: -72.285, label: 'Haïti - Choléra' },
+                    'ye': { lat: 15.553, lng: 48.516, label: 'Yémen - Paludisme' },
+                    'af': { lat: 33.939, lng: 67.710, label: 'Afghanistan - Paludisme' },
+                    'et': { lat: 9.145, lng: 40.490, label: 'Éthiopie - Choléra' },
+                    'tz': { lat: -6.369, lng: 34.889, label: 'Tanzanie - Choléra' },
+                    'zm': { lat: -13.134, lng: 27.849, label: 'Zambie - Choléra' },
+                    'zw': { lat: -19.015, lng: 29.155, label: 'Zimbabwe - Choléra' },
+                    'so': { lat: 5.152, lng: 46.200, label: 'Somalie - Chikungunya' },
+                    'mu': { lat: -20.348, lng: 57.552, label: 'Maurice - Chikungunya' },
+                    'in': { lat: 20.594, lng: 78.963, label: 'Inde - Chikungunya' },
+                    'bd': { lat: 23.685, lng: 90.356, label: 'Bangladesh - Chikungunya' },
+                    'lk': { lat: 7.873, lng: 80.772, label: 'Sri Lanka - Chikungunya' },
+                    'th': { lat: 15.870, lng: 100.993, label: 'Thaïlande - Chikungunya' },
+                    'id': { lat: -0.789, lng: 113.921, label: 'Indonésie - Risque vectoriel' },
+                    'ph': { lat: 12.880, lng: 121.774, label: 'Philippines - Risque vectoriel' },
+                    'vn': { lat: 14.058, lng: 108.277, label: 'Viêt Nam - Paludisme' },
+                    'kh': { lat: 12.565, lng: 104.991, label: 'Cambodge - Paludisme' },
+                    'la': { lat: 19.856, lng: 102.495, label: 'Laos - Paludisme' },
+                    'mm': { lat: 21.914, lng: 95.956, label: 'Myanmar - Paludisme' },
+                    'sy': { lat: 34.802, lng: 38.997, label: 'Syrie - Crise humanitaire' },
+                    'iq': { lat: 33.223, lng: 43.679, label: 'Irak - Crise humanitaire' },
+                };
 
-            const couleurs = { 'élevé': 'red', 'modéré': 'orange', 'faible': 'green' };
+                const couleurs = { 'élevé': 'red', 'modéré': 'orange', 'faible': 'green' };
 
-            for (const [code, data] of Object.entries(paysRisque)) {
-                const epi = epidemiologie[code] || { risque: 'faible' };
-                const couleur = couleurs[epi.risque] || 'blue';
-                L.circleMarker([data.lat, data.lng], {
-                    radius: 10,
-                    color: couleur,
-                    fillColor: couleur,
-                    fillOpacity: 0.6,
-                    weight: 2
-                }).addTo(map)
-                .bindPopup(`<b>${data.label}</b><br>Risque: ${epi.risque || 'inconnu'}`);
+                for (const [code, data] of Object.entries(paysRisque)) {
+                    const epi = epidemiologie[code] || { risque: 'faible' };
+                    const couleur = couleurs[epi.risque] || 'blue';
+                    L.circleMarker([data.lat, data.lng], {
+                        radius: 10,
+                        color: couleur,
+                        fillColor: couleur,
+                        fillOpacity: 0.6,
+                        weight: 2
+                    }).addTo(map)
+                    .bindPopup(`<b>${data.label}</b><br>Risque: ${epi.risque || 'inconnu'}`);
+                }
+
+                mapInitialized = true;
+            } catch(e) {
+                alert('Erreur lors du chargement de la carte. Vérifiez votre connexion internet.');
             }
-
-            mapInitialized = true;
         } else if (container.classList.contains('active') && mapInitialized) {
             setTimeout(() => map.invalidateSize(), 300);
         }
     });
 
     // ============================================================
-    // 6. INITIALISATION
+    // 7. INITIALISATION (évite l'erreur null)
     // ============================================================
-    switchLang('fr');
+    // On s'assure que tous les éléments existent avant d'appeler switchLang
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.getElementById('subtitle')) {
+            switchLang('fr');
+        }
+    });
 </script>
 
 </body>
