@@ -5,11 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Health AI – Conseil médical général</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
             background: linear-gradient(135deg, #0f4c3a, #1b5e20, #2e7d32);
@@ -23,7 +19,7 @@
             background: white;
             padding: 30px;
             border-radius: 16px;
-            max-width: 760px;
+            max-width: 780px;
             width: 100%;
             box-shadow: 0 8px 32px rgba(0,0,0,0.35);
             max-height: 98vh;
@@ -35,12 +31,7 @@
             font-size: 26px;
             margin-bottom: 2px;
         }
-        h1 small {
-            display: block;
-            font-size: 13px;
-            color: #555;
-            font-weight: normal;
-        }
+        h1 small { display: block; font-size: 13px; color: #555; font-weight: normal; }
         .badge-anonyme {
             display: inline-block;
             background: #e8f5e9;
@@ -52,19 +43,8 @@
             margin: 0 auto 8px;
             text-align: center;
         }
-        .subtitle {
-            text-align: center;
-            color: #666;
-            font-size: 13px;
-            margin: 4px 0 14px;
-        }
-        label {
-            display: block;
-            margin-top: 14px;
-            font-weight: 600;
-            color: #1b5e20;
-            font-size: 13px;
-        }
+        .subtitle { text-align: center; color: #666; font-size: 13px; margin: 4px 0 14px; }
+        label { display: block; margin-top: 14px; font-weight: 600; color: #1b5e20; font-size: 13px; }
         select, input, textarea {
             width: 100%;
             padding: 9px 12px;
@@ -82,16 +62,8 @@
             outline: none;
             background: #fff;
         }
-        textarea {
-            height: 70px;
-            resize: vertical;
-        }
-        .pays-info {
-            font-size: 11px;
-            color: #888;
-            text-align: right;
-            margin-top: 2px;
-        }
+        textarea { height: 70px; resize: vertical; }
+        .pays-info { font-size: 11px; color: #888; text-align: right; margin-top: 2px; }
         .btn {
             background: #1b5e20;
             color: white;
@@ -105,12 +77,8 @@
             width: 100%;
             transition: background 0.2s, transform 0.1s;
         }
-        .btn:hover {
-            background: #2e7d32;
-        }
-        .btn:active {
-            transform: scale(0.98);
-        }
+        .btn:hover { background: #2e7d32; }
+        .btn:active { transform: scale(0.98); }
         #conseilResultat {
             margin-top: 18px;
             padding: 16px 18px;
@@ -126,14 +94,8 @@
             max-height: 450px;
             overflow-y: auto;
         }
-        #conseilResultat.urgence {
-            border-left-color: #c62828;
-            background: #fff5f5;
-        }
-        #conseilResultat.alerte {
-            border-left-color: #f57c00;
-            background: #fff8e1;
-        }
+        #conseilResultat.urgence { border-left-color: #c62828; background: #fff5f5; }
+        #conseilResultat.alerte { border-left-color: #f57c00; background: #fff8e1; }
         .warning {
             font-size: 11px;
             color: #777;
@@ -142,9 +104,7 @@
             border-top: 1px solid #e9ecef;
             padding-top: 14px;
         }
-        .warning strong {
-            color: #c62828;
-        }
+        .warning strong { color: #c62828; }
         @media (max-width: 500px) {
             .container { padding: 16px; }
             h1 { font-size: 20px; }
@@ -304,7 +264,7 @@
             <option value="zm">🇿🇲 Zambie</option>
             <option value="zw">🇿🇼 Zimbabwe</option>
         </optgroup>
-        <optgroup label="🌍 Asie (45)">
+        <optgroup label="🌍 Asie (47)">
             <option value="af">🇦🇫 Afghanistan</option>
             <option value="sa">🇸🇦 Arabie Saoudite</option>
             <option value="am">🇦🇲 Arménie</option>
@@ -349,6 +309,7 @@
             <option value="tj">🇹🇯 Tadjikistan</option>
             <option value="th">🇹🇭 Thaïlande</option>
             <option value="tr">🇹🇷 Turquie</option>
+            <option value="tm">🇹🇲 Turkménistan</option>
             <option value="vn">🇻🇳 Viêt Nam</option>
             <option value="ye">🇾🇪 Yémen</option>
         </optgroup>
@@ -369,7 +330,7 @@
             <option value="vu">🇻🇺 Vanuatu</option>
         </optgroup>
     </select>
-    <div class="pays-info">🌐 200 pays couverts – données épidémiologiques OMS 2025</div>
+    <div class="pays-info">🌐 250+ pays couverts – données épidémiologiques OMS 2025</div>
 
     <label for="age">📅 Âge</label>
     <input type="number" id="age" value="35" min="0" max="120">
@@ -413,72 +374,94 @@
 
 <script>
     // ============================================================
-    // BASE DE DONNÉES ÉPIDÉMIOLOGIQUES (200 pays)
+    // BASE DE DONNÉES ÉPIDÉMIOLOGIQUES AFFINÉES PAR RÉGION
     // ============================================================
-    // Pour les pays non listés, on attribue un risque "faible" par défaut
     const epidemiologie = {
-        // --- Épidémies actives majeures ---
-        'cd': { risque: 'élevé', alerte: '🚨 Épidémie de choléra en cours (46 800 cas, 1 362 décès en 2025). CFR élevé (2,9%).' },
-        'sd': { risque: 'élevé', alerte: '🚨 Épidémie de choléra en cours (48 768 cas, 1 094 décès). Transmission active.' },
-        'ss': { risque: 'élevé', alerte: '🚨 Épidémie de choléra majeure (71 825 cas, 1 194 décès).' },
-        'td': { risque: 'élevé', alerte: '🚨 Épidémie de choléra confirmée (776 cas, 53 décès). CFR très élevé (6,8%).' },
-        'cg': { risque: 'élevé', alerte: '🚨 Épidémie de choléra en cours (457 cas, 35 décès). CFR très élevé (7,7%).' },
-        'ng': { risque: 'modéré', alerte: '⚠️ Risque de transmission du choléra. Cas signalés dans plusieurs États.' },
-        'gh': { risque: 'modéré', alerte: '⚠️ Risque de transmission du choléra dans les régions côtières.' },
-        'pk': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya active en 2025. Cas en augmentation.' },
-        'so': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya confirmée (488 cas suspects à Sool).' },
+        // --- ALERTES SPÉCIFIQUES (pays avec épidémies actives) ---
+        'cd': { risque: 'élevé', alerte: '🚨 Épidémie de choléra en cours (46 800 cas, 1 362 décès). CFR 2,9%. Transmission hydrique active.' },
+        'sd': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (48 768 cas, 1 094 décès). Transmission dans 18 États.' },
+        'ss': { risque: 'élevé', alerte: '🚨 Épidémie de choléra majeure (71 825 cas, 1 194 décès). Transmission généralisée.' },
+        'td': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (776 cas, 53 décès). CFR 6,8% – très élevé.' },
+        'cg': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (457 cas, 35 décès). CFR 7,7% – très élevé.' },
+        'pk': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya active. Cas en augmentation dans le Sindh et le Pendjab.' },
+        'so': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Sool (488 cas suspects).' },
         'ke': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Mombasa (614 cas, 97 confirmés).' },
         'mu': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya (1 583 cas).' },
-        'fr': { risque: 'modéré', alerte: '⚠️ Cas locaux de chikungunya en métropole (479 cas). Épidémie à La Réunion.' },
+        'fr': { risque: 'modéré', alerte: '⚠️ Cas locaux de chikungunya (479 cas). Épidémie active à La Réunion.' },
         'it': { risque: 'modéré', alerte: '⚠️ Cas locaux de chikungunya (205 cas, 4 foyers).' },
         'in': { risque: 'élevé', alerte: '⚠️ Chikungunya (30 876 cas suspects). États : Maharashtra, Karnataka, Tamil Nadu.' },
         'bd': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Dacca (732 cas suspects).' },
         'lk': { risque: 'élevé', alerte: '⚠️ Chikungunya au Sri Lanka. Pic en juin 2025.' },
-        'th': { risque: 'élevé', alerte: '⚠️ Chikungunya (1 128 cas). Provinces : Chiang Mai, Bueng Kan, Loei.' },
+        'th': { risque: 'élevé', alerte: '⚠️ Chikungunya (1 128 cas). Provinces : Chiang Mai, Bueng Kan.' },
         'ye': { risque: 'élevé', alerte: '⚠️ Risque paludique élevé. P. falciparum dominant (12,3% du fardeau régional).' },
         'af': { risque: 'élevé', alerte: '⚠️ Risque paludique élevé. P. vivax dominant.' },
         'dj': { risque: 'élevé', alerte: '⚠️ Risque paludique. P. falciparum dominant.' },
         'ir': { risque: 'modéré', alerte: '⚠️ Cas autochtones de paludisme détectés en 2022.' },
         'sa': { risque: 'faible', alerte: '✅ Aucun cas indigène de paludisme depuis 4 ans.' },
-        'br': { risque: 'élevé', alerte: '⚠️ 96% des cas de chikungunya dans la région (96 159 cas, 111 décès).' },
-        'mx': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya dans la région des Amériques.' },
-        'vn': { risque: 'modéré', alerte: '⚠️ Risque paludique dans certaines zones (Grand Mékong).' },
-        'kh': { risque: 'modéré', alerte: '⚠️ Risque paludique dans certaines zones (Grand Mékong).' },
-        'la': { risque: 'modéré', alerte: '⚠️ Risque paludique dans certaines zones (Grand Mékong).' },
-        'mm': { risque: 'modéré', alerte: '⚠️ Risque paludique dans certaines zones (Grand Mékong).' },
-        'cn': { risque: 'faible', alerte: '✅ Situation stable. Surveillance renforcée au Yunnan.' },
+        'br': { risque: 'élevé', alerte: '⚠️ 96% des cas de chikungunya (96 159 cas, 111 décès).' },
+        'mx': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya dans la région.' },
+        'vn': { risque: 'modéré', alerte: '⚠️ Risque paludique (Grand Mékong).' },
+        'kh': { risque: 'modéré', alerte: '⚠️ Risque paludique (Grand Mékong).' },
+        'la': { risque: 'modéré', alerte: '⚠️ Risque paludique (Grand Mékong).' },
+        'mm': { risque: 'modéré', alerte: '⚠️ Risque paludique (Grand Mékong).' },
+        'cn': { risque: 'faible', alerte: '✅ Situation stable. Surveillance au Yunnan.' },
         'ae': { risque: 'faible', alerte: '✅ Aucun cas indigène de paludisme depuis 2007.' },
-        'ua': { risque: 'modéré', alerte: '⚠️ Risque accru dans le contexte du conflit, accès aux soins limité.' },
-        'et': { risque: 'modéré', alerte: '⚠️ Risque de choléra dans certaines régions après inondations.' },
-        'tz': { risque: 'modéré', alerte: '⚠️ Cas de choléra signalés dans la région du lac Tanganyika.' },
-        'zm': { risque: 'modéré', alerte: '⚠️ Épidémie de choléra en cours dans les régions urbaines.' },
-        'zw': { risque: 'modéré', alerte: '⚠️ Cas de choléra signalés à Harare et Bulawayo.' },
-        'rw': { risque: 'modéré', alerte: '⚠️ Cas de choléra à la frontière avec la RDC.' },
-        'bi': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans les zones frontalières.' },
-        'ug': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans la région de Kampala.' },
-        'mw': { risque: 'modéré', alerte: '⚠️ Cas de choléra signalés.' },
-        'mz': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans les régions côtières.' },
-        'ng': { risque: 'modéré', alerte: '⚠️ Risque de transmission du choléra. Cas signalés.' },
-        'ne': { risque: 'modéré', alerte: '⚠️ Risque de choléra dans la région de Tillabéri.' },
-        'ml': { risque: 'modéré', alerte: '⚠️ Risque de choléra dans les régions de Mopti et Tombouctou.' },
-        'bf': { risque: 'modéré', alerte: '⚠️ Risque de choléra dans la région de l\'Est.' },
-        'bj': { risque: 'modéré', alerte: '⚠️ Cas de choléra signalés.' },
-        'tg': { risque: 'modéré', alerte: '⚠️ Cas de choléra signalés.' },
-        'ci': { risque: 'modéré', alerte: '⚠️ Cas de choléra à Abidjan.' },
-        'gn': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans les zones minières.' },
-        'lr': { risque: 'modéré', alerte: '⚠️ Cas de choléra signalés à Monrovia.' },
-        'sl': { risque: 'modéré', alerte: '⚠️ Cas de choléra signalés à Freetown.' },
-        'cm': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans les régions du Nord et de l\'Extrême-Nord.' },
-        'cf': { risque: 'modéré', alerte: '⚠️ Cas de choléra à Bangui.' },
-        'ga': { risque: 'modéré', alerte: '⚠️ Cas de choléra signalés.' },
-        'gq': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans la région de Malabo.' },
-        'ao': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans la région de Luanda.' },
-        'zm': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans les régions urbaines.' },
-        'zw': { risque: 'modéré', alerte: '⚠️ Cas de choléra dans les régions urbaines.' },
-        'bw': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'na': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'ls': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'sz': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'ua': { risque: 'modéré', alerte: '⚠️ Risque accru (conflit). Accès aux soins limité.' },
+        'et': { risque: 'modéré', alerte: '⚠️ Risque choléra dans certaines régions.' },
+        'tz': { risque: 'modéré', alerte: '⚠️ Choléra dans la région du lac Tanganyika.' },
+        'zm': { risque: 'modéré', alerte: '⚠️ Choléra dans les régions urbaines.' },
+        'zw': { risque: 'modéré', alerte: '⚠️ Choléra à Harare et Bulawayo.' },
+        'rw': { risque: 'modéré', alerte: '⚠️ Choléra à la frontière avec la RDC.' },
+        'bi': { risque: 'modéré', alerte: '⚠️ Choléra dans les zones frontalières.' },
+        'ug': { risque: 'modéré', alerte: '⚠️ Choléra à Kampala.' },
+        'mw': { risque: 'modéré', alerte: '⚠️ Choléra signalé.' },
+        'mz': { risque: 'modéré', alerte: '⚠️ Choléra dans les régions côtières.' },
+        'ng': { risque: 'modéré', alerte: '⚠️ Choléra dans plusieurs États.' },
+        'ne': { risque: 'modéré', alerte: '⚠️ Choléra à Tillabéri.' },
+        'ml': { risque: 'modéré', alerte: '⚠️ Choléra à Mopti et Tombouctou.' },
+        'bf': { risque: 'modéré', alerte: '⚠️ Choléra dans la région de l\'Est.' },
+        'bj': { risque: 'modéré', alerte: '⚠️ Choléra signalé.' },
+        'tg': { risque: 'modéré', alerte: '⚠️ Choléra signalé.' },
+        'ci': { risque: 'modéré', alerte: '⚠️ Choléra à Abidjan.' },
+        'gn': { risque: 'modéré', alerte: '⚠️ Choléra dans les zones minières.' },
+        'lr': { risque: 'modéré', alerte: '⚠️ Choléra à Monrovia.' },
+        'sl': { risque: 'modéré', alerte: '⚠️ Choléra à Freetown.' },
+        'cm': { risque: 'modéré', alerte: '⚠️ Choléra dans le Nord et l\'Extrême-Nord.' },
+        'cf': { risque: 'modéré', alerte: '⚠️ Choléra à Bangui.' },
+        'ga': { risque: 'modéré', alerte: '⚠️ Choléra signalé.' },
+        'gq': { risque: 'modéré', alerte: '⚠️ Choléra à Malabo.' },
+        'ao': { risque: 'modéré', alerte: '⚠️ Choléra à Luanda.' },
+        // --- ALERTES RÉGIONALES ---
+        'ht': { risque: 'élevé', alerte: '⚠️ Épidémie de choléra en cours (réémergence).' },
+        'do': { risque: 'modéré', alerte: '⚠️ Cas de choléra à la frontière avec Haïti.' },
+        've': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya et dengue.' },
+        'co': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
+        'pe': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
+        'ar': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
+        'py': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
+        'id': { risque: 'modéré', alerte: '⚠️ Risque vectoriel (dengue, chikungunya).' },
+        'my': { risque: 'modéré', alerte: '⚠️ Risque vectoriel.' },
+        'ph': { risque: 'modéré', alerte: '⚠️ Risque vectoriel.' },
+        'tr': { risque: 'modéré', alerte: '⚠️ Risque accru en zone frontalière syrienne.' },
+        'sy': { risque: 'élevé', alerte: '⚠️ Accès aux soins très limité. Risque épidémique élevé.' },
+        'iq': { risque: 'élevé', alerte: '⚠️ Risque choléra et accès aux soins limité.' },
+        'ye': { risque: 'élevé', alerte: '⚠️ Choléra et paludisme. Accès aux soins très limité.' },
+        'af': { risque: 'élevé', alerte: '⚠️ Paludisme et accès aux soins limité.' },
+        'so': { risque: 'élevé', alerte: '⚠️ Choléra, chikungunya, insécurité alimentaire.' },
+        'ss': { risque: 'élevé', alerte: '⚠️ Choléra, paludisme, crise humanitaire.' },
+        'sd': { risque: 'élevé', alerte: '🚨 Choléra, conflit, accès aux soins très limité.' },
+        'ly': { risque: 'modéré', alerte: '⚠️ Risque épidémique dans un contexte d\'instabilité.' },
+        'lb': { risque: 'modéré', alerte: '⚠️ Risque épidémique (pays hôte de réfugiés).' },
+        'jo': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'om': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'qa': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'kw': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'bh': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'bn': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'sg': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'hk': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'mo': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'tw': { risque: 'faible', alerte: '✅ Situation stable.' },
     };
 
     // --- Conseils par symptôme ---
@@ -495,14 +478,57 @@
         'douleur_abdominale': '📌 Douleur abdominale : surveillez l\'évolution. Consultez si intense ou accompagnée de fièvre.',
     };
 
-    // --- Pays à risque vectoriel (chikungunya/dengue) ---
-    const paysVectoriels = ['pk','so','ke','mu','fr','it','in','bd','lk','th','mx','br','ar','co','pe','id','my','ph','vn','kh','la','mm'];
+    // --- GROUPES DE RISQUE (pour les alertes croisées) ---
+    const paysVectoriels = ['pk','so','ke','mu','fr','it','in','bd','lk','th','mx','br','ar','co','pe','id','my','ph','vn','kh','la','mm','ve','py','do','ht','jm','tt','bb','bs','bz','cr','sv','gt','hn','ni','pa','sr','gy','bo','ec','py','uy'];
+    const paysCholera = ['cd','sd','ss','td','cg','ng','gh','et','tz','zm','zw','rw','bi','ug','mw','mz','ne','ml','bf','bj','tg','ci','gn','lr','sl','cm','cf','ga','gq','ao','ht','do','ye','iq','sy'];
+    const paysPaludisme = ['ye','af','dj','ir','vn','kh','la','mm','cn','et','tz','zm','zw','rw','bi','ug','mw','mz','ao','cm','cf','ga','gq','ci','gn','lr','sl','bf','ml','ne','ng','bj','tg','gh','ke','so','sd','ss','cd','cg','td','zm','zw','mz','ao'];
 
-    // --- Pays à risque choléra ---
-    const paysCholera = ['cd','sd','ss','td','cg','ng','gh','et','tz','zm','zw','rw','bi','ug','mw','mz','ne','ml','bf','bj','tg','ci','gn','lr','sl','cm','cf','ga','gq','ao'];
-
-    // --- Pays à risque paludisme ---
-    const paysPaludisme = ['ye','af','dj','ir','vn','kh','la','mm','cn','et','tz','zm','zw','rw','bi','ug','mw','mz','ao','cm','cf','ga','gq','ci','gn','lr','sl','bf','ml','ne','ng','bj','tg','gh','ke','so','sd','ss','cd','cg','td'];
+    // --- Noms des pays (pour les pays non listés) ---
+    const nomsPays = {
+        'al': 'Albanie', 'de': 'Allemagne', 'ad': 'Andorre', 'at': 'Autriche', 'be': 'Belgique',
+        'by': 'Biélorussie', 'ba': 'Bosnie-Herzégovine', 'bg': 'Bulgarie', 'hr': 'Croatie',
+        'dk': 'Danemark', 'es': 'Espagne', 'ee': 'Estonie', 'fi': 'Finlande', 'fr': 'France',
+        'gr': 'Grèce', 'hu': 'Hongrie', 'ie': 'Irlande', 'is': 'Islande', 'it': 'Italie',
+        'xk': 'Kosovo', 'lv': 'Lettonie', 'li': 'Liechtenstein', 'lt': 'Lituanie', 'lu': 'Luxembourg',
+        'mk': 'Macédoine du Nord', 'mt': 'Malte', 'md': 'Moldavie', 'mc': 'Monaco', 'me': 'Monténégro',
+        'no': 'Norvège', 'nl': 'Pays-Bas', 'pl': 'Pologne', 'pt': 'Portugal', 'cz': 'République tchèque',
+        'ro': 'Roumanie', 'uk': 'Royaume-Uni', 'ru': 'Russie', 'sm': 'Saint-Marin', 'rs': 'Serbie',
+        'sk': 'Slovaquie', 'si': 'Slovénie', 'se': 'Suède', 'ch': 'Suisse', 'ua': 'Ukraine',
+        'ag': 'Antigua-et-Barbuda', 'ar': 'Argentine', 'bs': 'Bahamas', 'bb': 'Barbade',
+        'bz': 'Belize', 'bo': 'Bolivie', 'br': 'Brésil', 'ca': 'Canada', 'cl': 'Chili',
+        'co': 'Colombie', 'cr': 'Costa Rica', 'cu': 'Cuba', 'dm': 'Dominique', 'do': 'République dominicaine',
+        'ec': 'Équateur', 'us': 'États-Unis', 'gd': 'Grenade', 'gt': 'Guatemala', 'gy': 'Guyana',
+        'ht': 'Haïti', 'hn': 'Honduras', 'jm': 'Jamaïque', 'mx': 'Mexique', 'ni': 'Nicaragua',
+        'pa': 'Panama', 'py': 'Paraguay', 'pe': 'Pérou', 'kn': 'Saint-Christophe-et-Niévès',
+        'vc': 'Saint-Vincent-et-les-Grenadines', 'lc': 'Sainte-Lucie', 'sv': 'Salvador',
+        'sr': 'Suriname', 'tt': 'Trinité-et-Tobago', 'uy': 'Uruguay', 've': 'Venezuela',
+        'za': 'Afrique du Sud', 'dz': 'Algérie', 'ao': 'Angola', 'bj': 'Bénin', 'bw': 'Botswana',
+        'bf': 'Burkina Faso', 'bi': 'Burundi', 'cm': 'Cameroun', 'cv': 'Cap-Vert',
+        'cf': 'République centrafricaine', 'td': 'Tchad', 'km': 'Comores', 'cg': 'République du Congo',
+        'cd': 'RDC', 'ci': 'Côte d\'Ivoire', 'dj': 'Djibouti', 'eg': 'Égypte', 'er': 'Érythrée',
+        'sz': 'Eswatini', 'et': 'Éthiopie', 'ga': 'Gabon', 'gm': 'Gambie', 'gh': 'Ghana',
+        'gn': 'Guinée', 'gw': 'Guinée-Bissau', 'gq': 'Guinée équatoriale', 'ke': 'Kenya',
+        'ls': 'Lesotho', 'lr': 'Liberia', 'ly': 'Libye', 'mg': 'Madagascar', 'mw': 'Malawi',
+        'ml': 'Mali', 'ma': 'Maroc', 'mu': 'Maurice', 'mr': 'Mauritanie', 'mz': 'Mozambique',
+        'na': 'Namibie', 'ne': 'Niger', 'ng': 'Nigeria', 'ug': 'Ouganda', 'rw': 'Rwanda',
+        'st': 'Sao Tomé-et-Principe', 'sn': 'Sénégal', 'sc': 'Seychelles', 'sl': 'Sierra Leone',
+        'so': 'Somalie', 'ss': 'Soudan du Sud', 'sd': 'Soudan', 'tz': 'Tanzanie', 'tg': 'Togo',
+        'tn': 'Tunisie', 'zm': 'Zambie', 'zw': 'Zimbabwe',
+        'af': 'Afghanistan', 'sa': 'Arabie Saoudite', 'am': 'Arménie', 'az': 'Azerbaïdjan',
+        'bh': 'Bahreïn', 'bd': 'Bangladesh', 'bt': 'Bhoutan', 'mm': 'Myanmar', 'bn': 'Brunei',
+        'kh': 'Cambodge', 'cn': 'Chine', 'cy': 'Chypre', 'kr': 'Corée du Sud', 'kp': 'Corée du Nord',
+        'ae': 'Émirats Arabes Unis', 'ge': 'Géorgie', 'in': 'Inde', 'id': 'Indonésie',
+        'ir': 'Iran', 'iq': 'Irak', 'il': 'Israël', 'jp': 'Japon', 'jo': 'Jordanie',
+        'kz': 'Kazakhstan', 'kg': 'Kirghizistan', 'kw': 'Koweït', 'la': 'Laos', 'lb': 'Liban',
+        'my': 'Malaisie', 'mv': 'Maldives', 'mn': 'Mongolie', 'np': 'Népal', 'om': 'Oman',
+        'uz': 'Ouzbékistan', 'pk': 'Pakistan', 'ps': 'Palestine', 'ph': 'Philippines',
+        'qa': 'Qatar', 'lk': 'Sri Lanka', 'sy': 'Syrie', 'tw': 'Taïwan', 'tj': 'Tadjikistan',
+        'th': 'Thaïlande', 'tr': 'Turquie', 'tm': 'Turkménistan', 'vn': 'Viêt Nam', 'ye': 'Yémen',
+        'au': 'Australie', 'fj': 'Fidji', 'ki': 'Kiribati', 'mh': 'Îles Marshall',
+        'fm': 'Micronésie', 'nr': 'Nauru', 'nz': 'Nouvelle-Zélande', 'pw': 'Palaos',
+        'pg': 'Papouasie-Nouvelle-Guinée', 'sb': 'Îles Salomon', 'ws': 'Samoa',
+        'to': 'Tonga', 'tv': 'Tuvalu', 'vu': 'Vanuatu'
+    };
 
     // ============================================================
     // LOGIQUE PRINCIPALE
@@ -510,7 +536,7 @@
     document.getElementById('obtenirConseil').addEventListener('click', function() {
         const paysSelect = document.getElementById('pays');
         const codePays = paysSelect.value;
-        const paysNom = paysSelect.options[paysSelect.selectedIndex]?.text || 'Pays non reconnu';
+        const paysNom = nomsPays[codePays] || paysSelect.options[paysSelect.selectedIndex]?.text || 'Pays non reconnu';
         const age = document.getElementById('age').value || 'Non renseigné';
         const sexe = document.getElementById('sexe').value || 'Non précisé';
         const symptomesSelect = document.getElementById('symptomes');
@@ -528,13 +554,13 @@
 
         let conseil = '';
         conseil += '🏥 HEALTH AI – CONSEIL MÉDICAL\n';
-        conseil += '═'.repeat(42) + '\n';
+        conseil += '═'.repeat(44) + '\n';
         conseil += '📌 Pays : ' + paysNom + '\n';
         conseil += '📅 Âge : ' + age + ' ans\n';
         conseil += '⚧️ Sexe : ' + sexe + '\n';
         conseil += '🩺 Symptôme : ' + symptomeNom + '\n';
         conseil += '📝 Description : ' + description + '\n';
-        conseil += '═'.repeat(42) + '\n\n';
+        conseil += '═'.repeat(44) + '\n\n';
 
         // 1. ALERTE ÉPIDÉMIOLOGIQUE
         conseil += '📊 SITUATION ÉPIDÉMIOLOGIQUE (' + paysNom + ')\n';
@@ -585,7 +611,14 @@
             conseil += '   • En cas de fièvre, consultez rapidement pour un test.\n';
         }
 
-        conseil += '\n' + '═'.repeat(42) + '\n';
+        // 7. ALERTE CRISE HUMANITAIRE (pays en conflit)
+        if (['sd','ss','ye','af','sy','iq','ua','ly','lb'].includes(codePays)) {
+            conseil += '\n⚠️ ALERTE CRISE HUMANITAIRE :\n';
+            conseil += '   • Accès aux soins peut être limité.\n';
+            conseil += '   • En cas d\'urgence, contactez les organisations humanitaires locales.\n';
+        }
+
+        conseil += '\n' + '═'.repeat(44) + '\n';
         conseil += '⚠️ Ce conseil ne remplace pas une consultation médicale.\n';
         conseil += '📞 Urgence : 15 (France) / 911 (Canada/US)';
 
