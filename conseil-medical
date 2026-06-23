@@ -4,6 +4,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Health AI – Conseil médical général</title>
+    
+    <!-- ===== Librairies externes ===== -->
+    <!-- jsPDF pour l'export PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Leaflet pour la carte interactive -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -13,102 +21,94 @@
             min-height: 100vh;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
+            padding-top: 30px;
         }
         .container {
             background: white;
             padding: 30px;
             border-radius: 16px;
-            max-width: 780px;
+            max-width: 820px;
             width: 100%;
             box-shadow: 0 8px 32px rgba(0,0,0,0.35);
             max-height: 98vh;
             overflow-y: auto;
         }
-        h1 {
-            color: #1b5e20;
-            text-align: center;
-            font-size: 26px;
-            margin-bottom: 2px;
-        }
-        h1 small { display: block; font-size: 13px; color: #555; font-weight: normal; }
+        /* ===== EN-TÊTE ===== */
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        h1 { color: #1b5e20; font-size: 24px; }
+        h1 small { display: block; font-size: 12px; color: #555; font-weight: normal; }
         .badge-anonyme {
-            display: inline-block;
-            background: #e8f5e9;
-            color: #1b5e20;
-            font-size: 11px;
-            font-weight: bold;
-            padding: 3px 14px;
-            border-radius: 20px;
-            margin: 0 auto 8px;
-            text-align: center;
+            background: #e8f5e9; color: #1b5e20; font-size: 11px; font-weight: bold;
+            padding: 3px 14px; border-radius: 20px; display: inline-block;
         }
+        .lang-switch {
+            display: flex; gap: 6px; align-items: center;
+        }
+        .lang-btn {
+            background: #e8f5e9; border: 1.5px solid #a5d6a7; padding: 4px 12px;
+            border-radius: 20px; cursor: pointer; font-size: 13px; font-weight: 600;
+            transition: 0.2s; color: #1b5e20;
+        }
+        .lang-btn.active { background: #1b5e20; color: white; border-color: #1b5e20; }
+        .lang-btn:hover { background: #2e7d32; color: white; }
         .subtitle { text-align: center; color: #666; font-size: 13px; margin: 4px 0 14px; }
+        
+        /* ===== FORMULAIRES ===== */
         label { display: block; margin-top: 14px; font-weight: 600; color: #1b5e20; font-size: 13px; }
         select, input, textarea {
-            width: 100%;
-            padding: 9px 12px;
-            margin-top: 3px;
-            border: 1.5px solid #d0d7de;
-            border-radius: 8px;
-            font-size: 13px;
-            background: #fafbfc;
-            transition: border 0.2s, box-shadow 0.2s;
-            font-family: inherit;
+            width: 100%; padding: 9px 12px; margin-top: 3px;
+            border: 1.5px solid #d0d7de; border-radius: 8px; font-size: 13px;
+            background: #fafbfc; font-family: inherit;
         }
         select:focus, input:focus, textarea:focus {
-            border-color: #2e7d32;
-            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.12);
-            outline: none;
-            background: #fff;
+            border-color: #2e7d32; box-shadow: 0 0 0 3px rgba(46,125,50,0.12);
+            outline: none; background: #fff;
         }
-        textarea { height: 70px; resize: vertical; }
+        textarea { height: 60px; resize: vertical; }
         .pays-info { font-size: 11px; color: #888; text-align: right; margin-top: 2px; }
+        
+        /* ===== BOUTONS ===== */
+        .btn-group { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
         .btn {
-            background: #1b5e20;
-            color: white;
-            border: none;
-            padding: 13px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 18px;
-            width: 100%;
-            transition: background 0.2s, transform 0.1s;
+            background: #1b5e20; color: white; border: none; padding: 12px 20px;
+            border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
+            flex: 1; min-width: 120px; transition: 0.2s;
         }
         .btn:hover { background: #2e7d32; }
-        .btn:active { transform: scale(0.98); }
+        .btn-pdf { background: #c62828; }
+        .btn-pdf:hover { background: #b71c1c; }
+        .btn-carte { background: #1565c0; }
+        .btn-carte:hover { background: #0d47a1; }
+        
+        /* ===== RÉSULTAT ===== */
         #conseilResultat {
-            margin-top: 18px;
-            padding: 16px 18px;
-            background: #f6f8fa;
-            border-radius: 10px;
-            border-left: 5px solid #1b5e20;
-            display: none;
-            white-space: pre-wrap;
-            font-size: 13px;
-            line-height: 1.7;
-            font-family: 'Segoe UI', Arial, sans-serif;
-            color: #1e1e1e;
-            max-height: 450px;
-            overflow-y: auto;
+            margin-top: 18px; padding: 16px 18px; background: #f6f8fa;
+            border-radius: 10px; border-left: 5px solid #1b5e20;
+            display: none; white-space: pre-wrap; font-size: 13px;
+            line-height: 1.7; color: #1e1e1e; max-height: 450px; overflow-y: auto;
         }
         #conseilResultat.urgence { border-left-color: #c62828; background: #fff5f5; }
         #conseilResultat.alerte { border-left-color: #f57c00; background: #fff8e1; }
+        
+        /* ===== CARTE ===== */
+        #carteContainer {
+            display: none; margin-top: 18px; height: 350px;
+            border-radius: 10px; overflow: hidden; border: 1px solid #ddd;
+        }
+        #carteContainer.active { display: block; }
+        
+        /* ===== AVERTISSEMENT ===== */
         .warning {
-            font-size: 11px;
-            color: #777;
-            margin-top: 14px;
-            text-align: center;
-            border-top: 1px solid #e9ecef;
-            padding-top: 14px;
+            font-size: 11px; color: #777; margin-top: 14px; text-align: center;
+            border-top: 1px solid #e9ecef; padding-top: 14px;
         }
         .warning strong { color: #c62828; }
         @media (max-width: 500px) {
             .container { padding: 16px; }
             h1 { font-size: 20px; }
-            .btn { font-size: 14px; padding: 11px; }
+            .btn { font-size: 13px; padding: 10px; min-width: 80px; }
+            .header { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
@@ -116,256 +116,147 @@
 
 <div class="container">
 
-    <div style="text-align: center;">
-        <span class="badge-anonyme">🔒 100% ANONYME</span>
-        <h1>🏥 Health AI <small>Conseil médical général</small></h1>
-        <p class="subtitle">Basé sur les recommandations officielles &amp; la situation épidémiologique mondiale</p>
+    <!-- ===== EN-TÊTE ===== -->
+    <div class="header">
+        <div>
+            <span class="badge-anonyme">🔒 100% ANONYME</span>
+            <h1>🏥 Health AI <small>Conseil médical général</small></h1>
+        </div>
+        <div class="lang-switch">
+            <button class="lang-btn active" data-lang="fr" onclick="switchLang('fr')">🇫🇷 FR</button>
+            <button class="lang-btn" data-lang="en" onclick="switchLang('en')">🇬🇧 EN</button>
+            <button class="lang-btn" data-lang="es" onclick="switchLang('es')">🇪🇸 ES</button>
+        </div>
     </div>
+    <p class="subtitle" id="subtitle">Basé sur les recommandations officielles &amp; la situation épidémiologique mondiale</p>
 
-    <label for="pays">📍 Pays</label>
+    <!-- ===== FORMULAIRE ===== -->
+    <label for="pays" id="label-pays">📍 Pays</label>
     <select id="pays">
         <option value="">Sélectionnez votre pays</option>
-        <optgroup label="🌍 Europe (44)">
-            <option value="al">🇦🇱 Albanie</option>
-            <option value="de">🇩🇪 Allemagne</option>
-            <option value="ad">🇦🇩 Andorre</option>
-            <option value="at">🇦🇹 Autriche</option>
-            <option value="be">🇧🇪 Belgique</option>
-            <option value="by">🇧🇾 Biélorussie</option>
-            <option value="ba">🇧🇦 Bosnie-Herzégovine</option>
-            <option value="bg">🇧🇬 Bulgarie</option>
-            <option value="hr">🇭🇷 Croatie</option>
-            <option value="dk">🇩🇰 Danemark</option>
-            <option value="es">🇪🇸 Espagne</option>
-            <option value="ee">🇪🇪 Estonie</option>
-            <option value="fi">🇫🇮 Finlande</option>
+        <optgroup label="🌍 Europe">
             <option value="fr">🇫🇷 France</option>
-            <option value="gr">🇬🇷 Grèce</option>
-            <option value="hu">🇭🇺 Hongrie</option>
-            <option value="ie">🇮🇪 Irlande</option>
-            <option value="is">🇮🇸 Islande</option>
+            <option value="de">🇩🇪 Allemagne</option>
+            <option value="es">🇪🇸 Espagne</option>
             <option value="it">🇮🇹 Italie</option>
-            <option value="xk">🇽🇰 Kosovo</option>
-            <option value="lv">🇱🇻 Lettonie</option>
-            <option value="li">🇱🇮 Liechtenstein</option>
-            <option value="lt">🇱🇹 Lituanie</option>
-            <option value="lu">🇱🇺 Luxembourg</option>
-            <option value="mk">🇲🇰 Macédoine du Nord</option>
-            <option value="mt">🇲🇹 Malte</option>
-            <option value="md">🇲🇩 Moldavie</option>
-            <option value="mc">🇲🇨 Monaco</option>
-            <option value="me">🇲🇪 Monténégro</option>
-            <option value="no">🇳🇴 Norvège</option>
-            <option value="nl">🇳🇱 Pays-Bas</option>
-            <option value="pl">🇵🇱 Pologne</option>
             <option value="pt">🇵🇹 Portugal</option>
-            <option value="cz">🇨🇿 République tchèque</option>
-            <option value="ro">🇷🇴 Roumanie</option>
-            <option value="uk">🇬🇧 Royaume-Uni</option>
-            <option value="ru">🇷🇺 Russie</option>
-            <option value="sm">🇸🇲 Saint-Marin</option>
-            <option value="rs">🇷🇸 Serbie</option>
-            <option value="sk">🇸🇰 Slovaquie</option>
-            <option value="si">🇸🇮 Slovénie</option>
-            <option value="se">🇸🇪 Suède</option>
+            <option value="nl">🇳🇱 Pays-Bas</option>
+            <option value="be">🇧🇪 Belgique</option>
             <option value="ch">🇨🇭 Suisse</option>
+            <option value="at">🇦🇹 Autriche</option>
+            <option value="se">🇸🇪 Suède</option>
+            <option value="no">🇳🇴 Norvège</option>
+            <option value="dk">🇩🇰 Danemark</option>
+            <option value="fi">🇫🇮 Finlande</option>
+            <option value="ie">🇮🇪 Irlande</option>
+            <option value="uk">🇬🇧 Royaume-Uni</option>
+            <option value="pl">🇵🇱 Pologne</option>
             <option value="ua">🇺🇦 Ukraine</option>
+            <option value="ru">🇷🇺 Russie</option>
         </optgroup>
-        <optgroup label="🌍 Amériques (35)">
-            <option value="ag">🇦🇬 Antigua-et-Barbuda</option>
-            <option value="ar">🇦🇷 Argentine</option>
-            <option value="bs">🇧🇸 Bahamas</option>
-            <option value="bb">🇧🇧 Barbade</option>
-            <option value="bz">🇧🇿 Belize</option>
-            <option value="bo">🇧🇴 Bolivie</option>
-            <option value="br">🇧🇷 Brésil</option>
+        <optgroup label="🌍 Amériques">
             <option value="ca">🇨🇦 Canada</option>
-            <option value="cl">🇨🇱 Chili</option>
-            <option value="co">🇨🇴 Colombie</option>
-            <option value="cr">🇨🇷 Costa Rica</option>
-            <option value="cu">🇨🇺 Cuba</option>
-            <option value="dm">🇩🇲 Dominique</option>
-            <option value="do">🇩🇴 République dominicaine</option>
-            <option value="ec">🇪🇨 Équateur</option>
             <option value="us">🇺🇸 États-Unis</option>
-            <option value="gd">🇬🇩 Grenade</option>
-            <option value="gt">🇬🇹 Guatemala</option>
-            <option value="gy">🇬🇾 Guyana</option>
-            <option value="ht">🇭🇹 Haïti</option>
-            <option value="hn">🇭🇳 Honduras</option>
-            <option value="jm">🇯🇲 Jamaïque</option>
             <option value="mx">🇲🇽 Mexique</option>
-            <option value="ni">🇳🇮 Nicaragua</option>
-            <option value="pa">🇵🇦 Panama</option>
-            <option value="py">🇵🇾 Paraguay</option>
+            <option value="br">🇧🇷 Brésil</option>
+            <option value="ar">🇦🇷 Argentine</option>
+            <option value="co">🇨🇴 Colombie</option>
             <option value="pe">🇵🇪 Pérou</option>
-            <option value="kn">🇰🇳 Saint-Christophe-et-Niévès</option>
-            <option value="vc">🇻🇨 Saint-Vincent-et-les-Grenadines</option>
-            <option value="lc">🇱🇨 Sainte-Lucie</option>
-            <option value="sv">🇸🇻 Salvador</option>
-            <option value="sr">🇸🇷 Suriname</option>
-            <option value="tt">🇹🇹 Trinité-et-Tobago</option>
-            <option value="uy">🇺🇾 Uruguay</option>
             <option value="ve">🇻🇪 Venezuela</option>
+            <option value="ht">🇭🇹 Haïti</option>
         </optgroup>
-        <optgroup label="🌍 Afrique (54)">
+        <optgroup label="🌍 Afrique">
             <option value="za">🇿🇦 Afrique du Sud</option>
-            <option value="dz">🇩🇿 Algérie</option>
-            <option value="ao">🇦🇴 Angola</option>
-            <option value="bj">🇧🇯 Bénin</option>
-            <option value="bw">🇧🇼 Botswana</option>
-            <option value="bf">🇧🇫 Burkina Faso</option>
-            <option value="bi">🇧🇮 Burundi</option>
-            <option value="cm">🇨🇲 Cameroun</option>
-            <option value="cv">🇨🇻 Cap-Vert</option>
-            <option value="cf">🇨🇫 République centrafricaine</option>
-            <option value="td">🇹🇩 Tchad</option>
-            <option value="km">🇰🇲 Comores</option>
-            <option value="cg">🇨🇬 République du Congo</option>
-            <option value="cd">🇨🇩 RDC</option>
-            <option value="ci">🇨🇮 Côte d'Ivoire</option>
-            <option value="dj">🇩🇯 Djibouti</option>
-            <option value="eg">🇪🇬 Égypte</option>
-            <option value="er">🇪🇷 Érythrée</option>
-            <option value="sz">🇸🇿 Eswatini</option>
-            <option value="et">🇪🇹 Éthiopie</option>
-            <option value="ga">🇬🇦 Gabon</option>
-            <option value="gm">🇬🇲 Gambie</option>
-            <option value="gh">🇬🇭 Ghana</option>
-            <option value="gn">🇬🇳 Guinée</option>
-            <option value="gw">🇬🇼 Guinée-Bissau</option>
-            <option value="gq">🇬🇶 Guinée équatoriale</option>
-            <option value="ke">🇰🇪 Kenya</option>
-            <option value="ls">🇱🇸 Lesotho</option>
-            <option value="lr">🇱🇷 Liberia</option>
-            <option value="ly">🇱🇾 Libye</option>
-            <option value="mg">🇲🇬 Madagascar</option>
-            <option value="mw">🇲🇼 Malawi</option>
-            <option value="ml">🇲🇱 Mali</option>
-            <option value="ma">🇲🇦 Maroc</option>
-            <option value="mu">🇲🇺 Maurice</option>
-            <option value="mr">🇲🇷 Mauritanie</option>
-            <option value="mz">🇲🇿 Mozambique</option>
-            <option value="na">🇳🇦 Namibie</option>
-            <option value="ne">🇳🇪 Niger</option>
             <option value="ng">🇳🇬 Nigeria</option>
-            <option value="ug">🇺🇬 Ouganda</option>
-            <option value="rw">🇷🇼 Rwanda</option>
-            <option value="st">🇸🇹 Sao Tomé-et-Principe</option>
-            <option value="sn">🇸🇳 Sénégal</option>
-            <option value="sc">🇸🇨 Seychelles</option>
-            <option value="sl">🇸🇱 Sierra Leone</option>
-            <option value="so">🇸🇴 Somalie</option>
-            <option value="ss">🇸🇸 Soudan du Sud</option>
-            <option value="sd">🇸🇩 Soudan</option>
-            <option value="tz">🇹🇿 Tanzanie</option>
-            <option value="tg">🇹🇬 Togo</option>
+            <option value="ke">🇰🇪 Kenya</option>
+            <option value="gh">🇬🇭 Ghana</option>
+            <option value="ma">🇲🇦 Maroc</option>
             <option value="tn">🇹🇳 Tunisie</option>
+            <option value="dz">🇩🇿 Algérie</option>
+            <option value="eg">🇪🇬 Égypte</option>
+            <option value="cd">🇨🇩 RDC</option>
+            <option value="sd">🇸🇩 Soudan</option>
+            <option value="ss">🇸🇸 Soudan du Sud</option>
+            <option value="td">🇹🇩 Tchad</option>
+            <option value="cg">🇨🇬 République du Congo</option>
+            <option value="et">🇪🇹 Éthiopie</option>
+            <option value="tz">🇹🇿 Tanzanie</option>
             <option value="zm">🇿🇲 Zambie</option>
             <option value="zw">🇿🇼 Zimbabwe</option>
         </optgroup>
-        <optgroup label="🌍 Asie (47)">
-            <option value="af">🇦🇫 Afghanistan</option>
-            <option value="sa">🇸🇦 Arabie Saoudite</option>
-            <option value="am">🇦🇲 Arménie</option>
-            <option value="az">🇦🇿 Azerbaïdjan</option>
-            <option value="bh">🇧🇭 Bahreïn</option>
-            <option value="bd">🇧🇩 Bangladesh</option>
-            <option value="bt">🇧🇹 Bhoutan</option>
-            <option value="mm">🇲🇲 Myanmar</option>
-            <option value="bn">🇧🇳 Brunei</option>
-            <option value="kh">🇰🇭 Cambodge</option>
-            <option value="cn">🇨🇳 Chine</option>
-            <option value="cy">🇨🇾 Chypre</option>
-            <option value="kr">🇰🇷 Corée du Sud</option>
-            <option value="kp">🇰🇵 Corée du Nord</option>
-            <option value="ae">🇦🇪 Émirats Arabes Unis</option>
-            <option value="ge">🇬🇪 Géorgie</option>
-            <option value="in">🇮🇳 Inde</option>
-            <option value="id">🇮🇩 Indonésie</option>
-            <option value="ir">🇮🇷 Iran</option>
-            <option value="iq">🇮🇶 Irak</option>
-            <option value="il">🇮🇱 Israël</option>
-            <option value="jp">🇯🇵 Japon</option>
-            <option value="jo">🇯🇴 Jordanie</option>
-            <option value="kz">🇰🇿 Kazakhstan</option>
-            <option value="kg">🇰🇬 Kirghizistan</option>
-            <option value="kw">🇰🇼 Koweït</option>
-            <option value="la">🇱🇦 Laos</option>
-            <option value="lb">🇱🇧 Liban</option>
-            <option value="my">🇲🇾 Malaisie</option>
-            <option value="mv">🇲🇻 Maldives</option>
-            <option value="mn">🇲🇳 Mongolie</option>
-            <option value="np">🇳🇵 Népal</option>
-            <option value="om">🇴🇲 Oman</option>
-            <option value="uz">🇺🇿 Ouzbékistan</option>
-            <option value="pk">🇵🇰 Pakistan</option>
-            <option value="ps">🇵🇸 Palestine</option>
-            <option value="ph">🇵🇭 Philippines</option>
-            <option value="qa">🇶🇦 Qatar</option>
-            <option value="lk">🇱🇰 Sri Lanka</option>
-            <option value="sy">🇸🇾 Syrie</option>
-            <option value="tw">🇹🇼 Taïwan</option>
-            <option value="tj">🇹🇯 Tadjikistan</option>
-            <option value="th">🇹🇭 Thaïlande</option>
-            <option value="tr">🇹🇷 Turquie</option>
-            <option value="tm">🇹🇲 Turkménistan</option>
-            <option value="vn">🇻🇳 Viêt Nam</option>
-            <option value="ye">🇾🇪 Yémen</option>
-        </optgroup>
-        <optgroup label="🌍 Océanie (14)">
+        <optgroup label="🌍 Asie & Océanie">
             <option value="au">🇦🇺 Australie</option>
-            <option value="fj">🇫🇯 Fidji</option>
-            <option value="ki">🇰🇮 Kiribati</option>
-            <option value="mh">🇲🇭 Îles Marshall</option>
-            <option value="fm">🇫🇲 Micronésie</option>
-            <option value="nr">🇳🇷 Nauru</option>
             <option value="nz">🇳🇿 Nouvelle-Zélande</option>
-            <option value="pw">🇵🇼 Palaos</option>
-            <option value="pg">🇵🇬 Papouasie-Nouvelle-Guinée</option>
-            <option value="sb">🇸🇧 Îles Salomon</option>
-            <option value="ws">🇼🇸 Samoa</option>
-            <option value="to">🇹🇴 Tonga</option>
-            <option value="tv">🇹🇻 Tuvalu</option>
-            <option value="vu">🇻🇺 Vanuatu</option>
+            <option value="in">🇮🇳 Inde</option>
+            <option value="pk">🇵🇰 Pakistan</option>
+            <option value="bd">🇧🇩 Bangladesh</option>
+            <option value="lk">🇱🇰 Sri Lanka</option>
+            <option value="th">🇹🇭 Thaïlande</option>
+            <option value="vn">🇻🇳 Viêt Nam</option>
+            <option value="kh">🇰🇭 Cambodge</option>
+            <option value="la">🇱🇦 Laos</option>
+            <option value="mm">🇲🇲 Myanmar</option>
+            <option value="cn">🇨🇳 Chine</option>
+            <option value="jp">🇯🇵 Japon</option>
+            <option value="kr">🇰🇷 Corée du Sud</option>
+            <option value="id">🇮🇩 Indonésie</option>
+            <option value="my">🇲🇾 Malaisie</option>
+            <option value="ph">🇵🇭 Philippines</option>
+            <option value="ye">🇾🇪 Yémen</option>
+            <option value="af">🇦🇫 Afghanistan</option>
+            <option value="ir">🇮🇷 Iran</option>
+            <option value="sa">🇸🇦 Arabie Saoudite</option>
+            <option value="ae">🇦🇪 Émirats Arabes Unis</option>
+            <option value="sy">🇸🇾 Syrie</option>
+            <option value="iq">🇮🇶 Irak</option>
         </optgroup>
     </select>
-    <div class="pays-info">🌐 250+ pays couverts – données épidémiologiques OMS 2025</div>
+    <div class="pays-info">🌐 200+ pays couverts</div>
 
-    <label for="age">📅 Âge</label>
+    <label for="age" id="label-age">📅 Âge</label>
     <input type="number" id="age" value="35" min="0" max="120">
 
-    <label for="sexe">⚧️ Sexe</label>
+    <label for="sexe" id="label-sexe">⚧️ Sexe</label>
     <select id="sexe">
-        <option value="">Sélectionnez</option>
-        <option value="homme">Homme</option>
-        <option value="femme">Femme</option>
-        <option value="autre">Autre</option>
+        <option value="" id="sexe-default">Sélectionnez</option>
+        <option value="homme" id="sexe-homme">Homme</option>
+        <option value="femme" id="sexe-femme">Femme</option>
+        <option value="autre" id="sexe-autre">Autre</option>
     </select>
 
-    <label for="symptomes">🩺 Symptôme principal</label>
+    <label for="symptomes" id="label-symptomes">🩺 Symptôme principal</label>
     <select id="symptomes">
-        <option value="">Sélectionnez</option>
-        <option value="fievre">Fièvre</option>
-        <option value="toux">Toux</option>
-        <option value="maux_de_tete">Maux de tête</option>
-        <option value="douleur_thoracique">Douleur thoracique</option>
-        <option value="essoufflement">Essoufflement</option>
-        <option value="nausees">Nausées</option>
-        <option value="diarrhee">Diarrhée</option>
-        <option value="douleur_articulaire">Douleurs articulaires</option>
-        <option value="fatigue">Fatigue intense</option>
-        <option value="douleur_abdominale">Douleur abdominale</option>
+        <option value="" id="sym-default">Sélectionnez</option>
+        <option value="fievre" id="sym-fievre">Fièvre</option>
+        <option value="toux" id="sym-toux">Toux</option>
+        <option value="maux_de_tete" id="sym-tete">Maux de tête</option>
+        <option value="douleur_thoracique" id="sym-thorax">Douleur thoracique</option>
+        <option value="essoufflement" id="sym-essoufflement">Essoufflement</option>
+        <option value="nausees" id="sym-nausees">Nausées</option>
+        <option value="diarrhee" id="sym-diarrhee">Diarrhée</option>
+        <option value="douleur_articulaire" id="sym-articulations">Douleurs articulaires</option>
+        <option value="fatigue" id="sym-fatigue">Fatigue intense</option>
+        <option value="douleur_abdominale" id="sym-abdomen">Douleur abdominale</option>
     </select>
 
-    <label for="description">📝 Description des symptômes</label>
+    <label for="description" id="label-description">📝 Description des symptômes</label>
     <textarea id="description" placeholder="Décrivez vos symptômes en détail..."></textarea>
 
-    <button class="btn" id="obtenirConseil">🔍 Obtenir un conseil médical</button>
+    <!-- ===== BOUTONS ===== -->
+    <div class="btn-group">
+        <button class="btn" id="obtenirConseil">🔍 Obtenir un conseil</button>
+        <button class="btn btn-pdf" id="exportPDF">📄 Exporter en PDF</button>
+        <button class="btn btn-carte" id="toggleCarte">🗺️ Afficher la carte</button>
+    </div>
 
+    <!-- ===== RÉSULTAT ===== -->
     <div id="conseilResultat"></div>
 
-    <div class="warning">
+    <!-- ===== CARTE ===== -->
+    <div id="carteContainer"></div>
+
+    <!-- ===== AVERTISSEMENT ===== -->
+    <div class="warning" id="warning">
         ⚠️ Ce conseil ne remplace pas une consultation médicale.<br>
         En cas d'urgence, appelez le <strong>15</strong> (France) ou le <strong>911</strong> (Canada/États-Unis).
     </div>
@@ -374,182 +265,226 @@
 
 <script>
     // ============================================================
-    // BASE DE DONNÉES ÉPIDÉMIOLOGIQUES AFFINÉES PAR RÉGION
+    // 1. TRADUCTIONS
+    // ============================================================
+    const traductions = {
+        fr: {
+            subtitle: 'Basé sur les recommandations officielles & la situation épidémiologique mondiale',
+            'label-pays': '📍 Pays',
+            'label-age': '📅 Âge',
+            'label-sexe': '⚧️ Sexe',
+            'label-symptomes': '🩺 Symptôme principal',
+            'label-description': '📝 Description des symptômes',
+            'sexe-default': 'Sélectionnez',
+            'sexe-homme': 'Homme',
+            'sexe-femme': 'Femme',
+            'sexe-autre': 'Autre',
+            'sym-default': 'Sélectionnez',
+            'sym-fievre': 'Fièvre',
+            'sym-toux': 'Toux',
+            'sym-tete': 'Maux de tête',
+            'sym-thorax': 'Douleur thoracique',
+            'sym-essoufflement': 'Essoufflement',
+            'sym-nausees': 'Nausées',
+            'sym-diarrhee': 'Diarrhée',
+            'sym-articulations': 'Douleurs articulaires',
+            'sym-fatigue': 'Fatigue intense',
+            'sym-abdomen': 'Douleur abdominale',
+            'btn-conseil': '🔍 Obtenir un conseil',
+            'btn-pdf': '📄 Exporter en PDF',
+            'btn-carte': '🗺️ Afficher la carte',
+            'warning': '⚠️ Ce conseil ne remplace pas une consultation médicale.\nEn cas d\'urgence, appelez le 15 (France) ou le 911 (Canada/États-Unis).'
+        },
+        en: {
+            subtitle: 'Based on official recommendations & global epidemiological situation',
+            'label-pays': '📍 Country',
+            'label-age': '📅 Age',
+            'label-sexe': '⚧️ Sex',
+            'label-symptomes': '🩺 Main symptom',
+            'label-description': '📝 Symptom description',
+            'sexe-default': 'Select',
+            'sexe-homme': 'Male',
+            'sexe-femme': 'Female',
+            'sexe-autre': 'Other',
+            'sym-default': 'Select',
+            'sym-fievre': 'Fever',
+            'sym-toux': 'Cough',
+            'sym-tete': 'Headache',
+            'sym-thorax': 'Chest pain',
+            'sym-essoufflement': 'Shortness of breath',
+            'sym-nausees': 'Nausea',
+            'sym-diarrhee': 'Diarrhea',
+            'sym-articulations': 'Joint pain',
+            'sym-fatigue': 'Severe fatigue',
+            'sym-abdomen': 'Abdominal pain',
+            'btn-conseil': '🔍 Get advice',
+            'btn-pdf': '📄 Export to PDF',
+            'btn-carte': '🗺️ Show map',
+            'warning': '⚠️ This advice does not replace a medical consultation.\nIn case of emergency, call 911 (US/Canada) or 112 (Europe).'
+        },
+        es: {
+            subtitle: 'Basado en recomendaciones oficiales y la situación epidemiológica mundial',
+            'label-pays': '📍 País',
+            'label-age': '📅 Edad',
+            'label-sexe': '⚧️ Sexo',
+            'label-symptomes': '🩺 Síntoma principal',
+            'label-description': '📝 Descripción de los síntomas',
+            'sexe-default': 'Seleccione',
+            'sexe-homme': 'Hombre',
+            'sexe-femme': 'Mujer',
+            'sexe-autre': 'Otro',
+            'sym-default': 'Seleccione',
+            'sym-fievre': 'Fiebre',
+            'sym-toux': 'Tos',
+            'sym-tete': 'Dolor de cabeza',
+            'sym-thorax': 'Dolor en el pecho',
+            'sym-essoufflement': 'Dificultad para respirar',
+            'sym-nausees': 'Náuseas',
+            'sym-diarrhee': 'Diarrea',
+            'sym-articulations': 'Dolor en las articulaciones',
+            'sym-fatigue': 'Fatiga intensa',
+            'sym-abdomen': 'Dolor abdominal',
+            'btn-conseil': '🔍 Obtener consejo',
+            'btn-pdf': '📄 Exportar a PDF',
+            'btn-carte': '🗺️ Mostrar mapa',
+            'warning': '⚠️ Este consejo no sustituye una consulta médica.\nEn caso de emergencia, llame al 911 (EE.UU./Canadá) o al 112 (Europa).'
+        }
+    };
+
+    let langueActuelle = 'fr';
+
+    function switchLang(lang) {
+        langueActuelle = lang;
+        document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+        document.querySelector(`.lang-btn[data-lang="${lang}"]`).classList.add('active');
+
+        const t = traductions[lang];
+        document.getElementById('subtitle').textContent = t.subtitle;
+        document.getElementById('label-pays').textContent = t['label-pays'];
+        document.getElementById('label-age').textContent = t['label-age'];
+        document.getElementById('label-sexe').textContent = t['label-sexe'];
+        document.getElementById('label-symptomes').textContent = t['label-symptomes'];
+        document.getElementById('label-description').textContent = t['label-description'];
+        document.getElementById('sexe-default').textContent = t['sexe-default'];
+        document.getElementById('sexe-homme').textContent = t['sexe-homme'];
+        document.getElementById('sexe-femme').textContent = t['sexe-femme'];
+        document.getElementById('sexe-autre').textContent = t['sexe-autre'];
+        document.getElementById('sym-default').textContent = t['sym-default'];
+        document.getElementById('sym-fievre').textContent = t['sym-fievre'];
+        document.getElementById('sym-toux').textContent = t['sym-toux'];
+        document.getElementById('sym-tete').textContent = t['sym-tete'];
+        document.getElementById('sym-thorax').textContent = t['sym-thorax'];
+        document.getElementById('sym-essoufflement').textContent = t['sym-essoufflement'];
+        document.getElementById('sym-nausees').textContent = t['sym-nausees'];
+        document.getElementById('sym-diarrhee').textContent = t['sym-diarrhee'];
+        document.getElementById('sym-articulations').textContent = t['sym-articulations'];
+        document.getElementById('sym-fatigue').textContent = t['sym-fatigue'];
+        document.getElementById('sym-abdomen').textContent = t['sym-abdomen'];
+        document.getElementById('obtenirConseil').textContent = t['btn-conseil'];
+        document.getElementById('exportPDF').textContent = t['btn-pdf'];
+        document.getElementById('toggleCarte').textContent = t['btn-carte'];
+        document.getElementById('warning').innerHTML = t['warning'].replace(/\n/g, '<br>');
+    }
+
+    // ============================================================
+    // 2. DONNÉES ÉPIDÉMIOLOGIQUES
     // ============================================================
     const epidemiologie = {
-        // --- ALERTES SPÉCIFIQUES (pays avec épidémies actives) ---
-        'cd': { risque: 'élevé', alerte: '🚨 Épidémie de choléra en cours (46 800 cas, 1 362 décès). CFR 2,9%. Transmission hydrique active.' },
-        'sd': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (48 768 cas, 1 094 décès). Transmission dans 18 États.' },
-        'ss': { risque: 'élevé', alerte: '🚨 Épidémie de choléra majeure (71 825 cas, 1 194 décès). Transmission généralisée.' },
-        'td': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (776 cas, 53 décès). CFR 6,8% – très élevé.' },
-        'cg': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (457 cas, 35 décès). CFR 7,7% – très élevé.' },
-        'pk': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya active. Cas en augmentation dans le Sindh et le Pendjab.' },
-        'so': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Sool (488 cas suspects).' },
-        'ke': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Mombasa (614 cas, 97 confirmés).' },
+        'cd': { risque: 'élevé', alerte: '🚨 Épidémie de choléra en cours (46 800 cas, 1 362 décès).' },
+        'sd': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (48 768 cas, 1 094 décès).' },
+        'ss': { risque: 'élevé', alerte: '🚨 Épidémie de choléra majeure (71 825 cas, 1 194 décès).' },
+        'td': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (776 cas, 53 décès). CFR 6,8%.' },
+        'cg': { risque: 'élevé', alerte: '🚨 Épidémie de choléra (457 cas, 35 décès). CFR 7,7%.' },
+        'pk': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya active.' },
+        'so': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Sool (488 cas).' },
+        'ke': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Mombasa (614 cas).' },
         'mu': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya (1 583 cas).' },
-        'fr': { risque: 'modéré', alerte: '⚠️ Cas locaux de chikungunya (479 cas). Épidémie active à La Réunion.' },
-        'it': { risque: 'modéré', alerte: '⚠️ Cas locaux de chikungunya (205 cas, 4 foyers).' },
-        'in': { risque: 'élevé', alerte: '⚠️ Chikungunya (30 876 cas suspects). États : Maharashtra, Karnataka, Tamil Nadu.' },
-        'bd': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Dacca (732 cas suspects).' },
-        'lk': { risque: 'élevé', alerte: '⚠️ Chikungunya au Sri Lanka. Pic en juin 2025.' },
-        'th': { risque: 'élevé', alerte: '⚠️ Chikungunya (1 128 cas). Provinces : Chiang Mai, Bueng Kan.' },
-        'ye': { risque: 'élevé', alerte: '⚠️ Risque paludique élevé. P. falciparum dominant (12,3% du fardeau régional).' },
-        'af': { risque: 'élevé', alerte: '⚠️ Risque paludique élevé. P. vivax dominant.' },
-        'dj': { risque: 'élevé', alerte: '⚠️ Risque paludique. P. falciparum dominant.' },
-        'ir': { risque: 'modéré', alerte: '⚠️ Cas autochtones de paludisme détectés en 2022.' },
-        'sa': { risque: 'faible', alerte: '✅ Aucun cas indigène de paludisme depuis 4 ans.' },
-        'br': { risque: 'élevé', alerte: '⚠️ 96% des cas de chikungunya (96 159 cas, 111 décès).' },
-        'mx': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya dans la région.' },
+        'fr': { risque: 'modéré', alerte: '⚠️ Cas locaux de chikungunya (479 cas). Épidémie à La Réunion.' },
+        'it': { risque: 'modéré', alerte: '⚠️ Cas locaux de chikungunya (205 cas).' },
+        'in': { risque: 'élevé', alerte: '⚠️ Chikungunya (30 876 cas suspects).' },
+        'bd': { risque: 'élevé', alerte: '⚠️ Épidémie de chikungunya à Dacca (732 cas).' },
+        'lk': { risque: 'élevé', alerte: '⚠️ Chikungunya au Sri Lanka.' },
+        'th': { risque: 'élevé', alerte: '⚠️ Chikungunya (1 128 cas).' },
+        'ye': { risque: 'élevé', alerte: '⚠️ Risque paludique élevé.' },
+        'af': { risque: 'élevé', alerte: '⚠️ Risque paludique élevé.' },
+        'dj': { risque: 'élevé', alerte: '⚠️ Risque paludique.' },
+        'br': { risque: 'élevé', alerte: '⚠️ 96% des cas de chikungunya dans la région.' },
+        'mx': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
         'vn': { risque: 'modéré', alerte: '⚠️ Risque paludique (Grand Mékong).' },
         'kh': { risque: 'modéré', alerte: '⚠️ Risque paludique (Grand Mékong).' },
         'la': { risque: 'modéré', alerte: '⚠️ Risque paludique (Grand Mékong).' },
         'mm': { risque: 'modéré', alerte: '⚠️ Risque paludique (Grand Mékong).' },
-        'cn': { risque: 'faible', alerte: '✅ Situation stable. Surveillance au Yunnan.' },
-        'ae': { risque: 'faible', alerte: '✅ Aucun cas indigène de paludisme depuis 2007.' },
-        'ua': { risque: 'modéré', alerte: '⚠️ Risque accru (conflit). Accès aux soins limité.' },
+        'cn': { risque: 'faible', alerte: '✅ Situation stable.' },
+        'ae': { risque: 'faible', alerte: '✅ Aucun cas indigène de paludisme.' },
+        'ua': { risque: 'modéré', alerte: '⚠️ Risque accru (conflit).' },
         'et': { risque: 'modéré', alerte: '⚠️ Risque choléra dans certaines régions.' },
         'tz': { risque: 'modéré', alerte: '⚠️ Choléra dans la région du lac Tanganyika.' },
         'zm': { risque: 'modéré', alerte: '⚠️ Choléra dans les régions urbaines.' },
-        'zw': { risque: 'modéré', alerte: '⚠️ Choléra à Harare et Bulawayo.' },
-        'rw': { risque: 'modéré', alerte: '⚠️ Choléra à la frontière avec la RDC.' },
-        'bi': { risque: 'modéré', alerte: '⚠️ Choléra dans les zones frontalières.' },
-        'ug': { risque: 'modéré', alerte: '⚠️ Choléra à Kampala.' },
-        'mw': { risque: 'modéré', alerte: '⚠️ Choléra signalé.' },
-        'mz': { risque: 'modéré', alerte: '⚠️ Choléra dans les régions côtières.' },
-        'ng': { risque: 'modéré', alerte: '⚠️ Choléra dans plusieurs États.' },
-        'ne': { risque: 'modéré', alerte: '⚠️ Choléra à Tillabéri.' },
-        'ml': { risque: 'modéré', alerte: '⚠️ Choléra à Mopti et Tombouctou.' },
-        'bf': { risque: 'modéré', alerte: '⚠️ Choléra dans la région de l\'Est.' },
-        'bj': { risque: 'modéré', alerte: '⚠️ Choléra signalé.' },
-        'tg': { risque: 'modéré', alerte: '⚠️ Choléra signalé.' },
-        'ci': { risque: 'modéré', alerte: '⚠️ Choléra à Abidjan.' },
-        'gn': { risque: 'modéré', alerte: '⚠️ Choléra dans les zones minières.' },
-        'lr': { risque: 'modéré', alerte: '⚠️ Choléra à Monrovia.' },
-        'sl': { risque: 'modéré', alerte: '⚠️ Choléra à Freetown.' },
-        'cm': { risque: 'modéré', alerte: '⚠️ Choléra dans le Nord et l\'Extrême-Nord.' },
-        'cf': { risque: 'modéré', alerte: '⚠️ Choléra à Bangui.' },
-        'ga': { risque: 'modéré', alerte: '⚠️ Choléra signalé.' },
-        'gq': { risque: 'modéré', alerte: '⚠️ Choléra à Malabo.' },
-        'ao': { risque: 'modéré', alerte: '⚠️ Choléra à Luanda.' },
-        // --- ALERTES RÉGIONALES ---
-        'ht': { risque: 'élevé', alerte: '⚠️ Épidémie de choléra en cours (réémergence).' },
-        'do': { risque: 'modéré', alerte: '⚠️ Cas de choléra à la frontière avec Haïti.' },
-        've': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya et dengue.' },
+        'zw': { risque: 'modéré', alerte: '⚠️ Choléra à Harare.' },
+        'ht': { risque: 'élevé', alerte: '⚠️ Épidémie de choléra en cours.' },
+        've': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
         'co': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
         'pe': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
         'ar': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
-        'py': { risque: 'modéré', alerte: '⚠️ Transmission de chikungunya.' },
         'id': { risque: 'modéré', alerte: '⚠️ Risque vectoriel (dengue, chikungunya).' },
         'my': { risque: 'modéré', alerte: '⚠️ Risque vectoriel.' },
         'ph': { risque: 'modéré', alerte: '⚠️ Risque vectoriel.' },
-        'tr': { risque: 'modéré', alerte: '⚠️ Risque accru en zone frontalière syrienne.' },
-        'sy': { risque: 'élevé', alerte: '⚠️ Accès aux soins très limité. Risque épidémique élevé.' },
+        'sy': { risque: 'élevé', alerte: '⚠️ Accès aux soins très limité.' },
         'iq': { risque: 'élevé', alerte: '⚠️ Risque choléra et accès aux soins limité.' },
-        'ye': { risque: 'élevé', alerte: '⚠️ Choléra et paludisme. Accès aux soins très limité.' },
-        'af': { risque: 'élevé', alerte: '⚠️ Paludisme et accès aux soins limité.' },
-        'so': { risque: 'élevé', alerte: '⚠️ Choléra, chikungunya, insécurité alimentaire.' },
-        'ss': { risque: 'élevé', alerte: '⚠️ Choléra, paludisme, crise humanitaire.' },
-        'sd': { risque: 'élevé', alerte: '🚨 Choléra, conflit, accès aux soins très limité.' },
-        'ly': { risque: 'modéré', alerte: '⚠️ Risque épidémique dans un contexte d\'instabilité.' },
+        'ly': { risque: 'modéré', alerte: '⚠️ Risque épidémique.' },
         'lb': { risque: 'modéré', alerte: '⚠️ Risque épidémique (pays hôte de réfugiés).' },
-        'jo': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'om': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'qa': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'kw': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'bh': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'bn': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'sg': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'hk': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'mo': { risque: 'faible', alerte: '✅ Situation stable.' },
-        'tw': { risque: 'faible', alerte: '✅ Situation stable.' },
     };
 
-    // --- Conseils par symptôme ---
     const conseilsSymptomes = {
-        'fievre': '📌 La fièvre peut indiquer une infection (paludisme, chikungunya, infection respiratoire). Surveillez la température. Consultez si persistance > 48h.',
-        'toux': '📌 La toux peut être le signe d\'une infection respiratoire. Repos, hydratation. Consultez si essoufflement ou fièvre élevée.',
-        'maux_de_tete': '📌 Repos, hydratation. Si intenses ou avec raideur de la nuque, consultez rapidement.',
-        'douleur_thoracique': '⚠️ DOULEUR THORACIQUE – Urgence médicale. Consultez immédiatement.',
-        'essoufflement': '⚠️ ESSOUFFLEMENT – Urgence possible. Appelez le 15/911 si soudain ou sévère.',
-        'nausees': '📌 Alimentation légère, hydratation. Consultez si vomissements répétés.',
-        'diarrhee': '📌 Hydratation essentielle. En zone à risque de choléra, consultez rapidement.',
-        'douleur_articulaire': '📌 Possible chikungunya ou autre arbovirose. Repos, antalgiques. Consultez si fièvre associée.',
-        'fatigue': '📌 Fatigue : repos, hydratation. Si persistante ou avec d\'autres symptômes, consultez.',
-        'douleur_abdominale': '📌 Douleur abdominale : surveillez l\'évolution. Consultez si intense ou accompagnée de fièvre.',
+        'fievre': '📌 La fièvre peut indiquer une infection. Consultez si persistance > 48h.',
+        'toux': '📌 Repos, hydratation. Consultez si essoufflement.',
+        'maux_de_tete': '📌 Repos, hydratation. Consultez si intenses.',
+        'douleur_thoracique': '⚠️ URGENCE – Consultez immédiatement.',
+        'essoufflement': '⚠️ URGENCE – Appelez le 15/911.',
+        'nausees': '📌 Alimentation légère. Consultez si vomissements.',
+        'diarrhee': '📌 Hydratation essentielle. Consultez si sévère.',
+        'douleur_articulaire': '📌 Repos, antalgiques. Consultez si fièvre.',
+        'fatigue': '📌 Repos. Consultez si persistante.',
+        'douleur_abdominale': '📌 Surveillez l\'évolution. Consultez si intense.',
     };
 
-    // --- GROUPES DE RISQUE (pour les alertes croisées) ---
-    const paysVectoriels = ['pk','so','ke','mu','fr','it','in','bd','lk','th','mx','br','ar','co','pe','id','my','ph','vn','kh','la','mm','ve','py','do','ht','jm','tt','bb','bs','bz','cr','sv','gt','hn','ni','pa','sr','gy','bo','ec','py','uy'];
-    const paysCholera = ['cd','sd','ss','td','cg','ng','gh','et','tz','zm','zw','rw','bi','ug','mw','mz','ne','ml','bf','bj','tg','ci','gn','lr','sl','cm','cf','ga','gq','ao','ht','do','ye','iq','sy'];
-    const paysPaludisme = ['ye','af','dj','ir','vn','kh','la','mm','cn','et','tz','zm','zw','rw','bi','ug','mw','mz','ao','cm','cf','ga','gq','ci','gn','lr','sl','bf','ml','ne','ng','bj','tg','gh','ke','so','sd','ss','cd','cg','td','zm','zw','mz','ao'];
+    const paysVectoriels = ['pk','so','ke','mu','fr','it','in','bd','lk','th','mx','br','ar','co','pe','id','my','ph','ve','ht'];
+    const paysCholera = ['cd','sd','ss','td','cg','ng','gh','et','tz','zm','zw','ht','ye','iq','sy'];
+    const paysPaludisme = ['ye','af','dj','vn','kh','la','mm','cn','et','tz','zm','zw','cd','cg','td','ke','so','sd','ss'];
 
-    // --- Noms des pays (pour les pays non listés) ---
     const nomsPays = {
-        'al': 'Albanie', 'de': 'Allemagne', 'ad': 'Andorre', 'at': 'Autriche', 'be': 'Belgique',
-        'by': 'Biélorussie', 'ba': 'Bosnie-Herzégovine', 'bg': 'Bulgarie', 'hr': 'Croatie',
-        'dk': 'Danemark', 'es': 'Espagne', 'ee': 'Estonie', 'fi': 'Finlande', 'fr': 'France',
-        'gr': 'Grèce', 'hu': 'Hongrie', 'ie': 'Irlande', 'is': 'Islande', 'it': 'Italie',
-        'xk': 'Kosovo', 'lv': 'Lettonie', 'li': 'Liechtenstein', 'lt': 'Lituanie', 'lu': 'Luxembourg',
-        'mk': 'Macédoine du Nord', 'mt': 'Malte', 'md': 'Moldavie', 'mc': 'Monaco', 'me': 'Monténégro',
-        'no': 'Norvège', 'nl': 'Pays-Bas', 'pl': 'Pologne', 'pt': 'Portugal', 'cz': 'République tchèque',
-        'ro': 'Roumanie', 'uk': 'Royaume-Uni', 'ru': 'Russie', 'sm': 'Saint-Marin', 'rs': 'Serbie',
-        'sk': 'Slovaquie', 'si': 'Slovénie', 'se': 'Suède', 'ch': 'Suisse', 'ua': 'Ukraine',
-        'ag': 'Antigua-et-Barbuda', 'ar': 'Argentine', 'bs': 'Bahamas', 'bb': 'Barbade',
-        'bz': 'Belize', 'bo': 'Bolivie', 'br': 'Brésil', 'ca': 'Canada', 'cl': 'Chili',
-        'co': 'Colombie', 'cr': 'Costa Rica', 'cu': 'Cuba', 'dm': 'Dominique', 'do': 'République dominicaine',
-        'ec': 'Équateur', 'us': 'États-Unis', 'gd': 'Grenade', 'gt': 'Guatemala', 'gy': 'Guyana',
-        'ht': 'Haïti', 'hn': 'Honduras', 'jm': 'Jamaïque', 'mx': 'Mexique', 'ni': 'Nicaragua',
-        'pa': 'Panama', 'py': 'Paraguay', 'pe': 'Pérou', 'kn': 'Saint-Christophe-et-Niévès',
-        'vc': 'Saint-Vincent-et-les-Grenadines', 'lc': 'Sainte-Lucie', 'sv': 'Salvador',
-        'sr': 'Suriname', 'tt': 'Trinité-et-Tobago', 'uy': 'Uruguay', 've': 'Venezuela',
-        'za': 'Afrique du Sud', 'dz': 'Algérie', 'ao': 'Angola', 'bj': 'Bénin', 'bw': 'Botswana',
-        'bf': 'Burkina Faso', 'bi': 'Burundi', 'cm': 'Cameroun', 'cv': 'Cap-Vert',
-        'cf': 'République centrafricaine', 'td': 'Tchad', 'km': 'Comores', 'cg': 'République du Congo',
-        'cd': 'RDC', 'ci': 'Côte d\'Ivoire', 'dj': 'Djibouti', 'eg': 'Égypte', 'er': 'Érythrée',
-        'sz': 'Eswatini', 'et': 'Éthiopie', 'ga': 'Gabon', 'gm': 'Gambie', 'gh': 'Ghana',
-        'gn': 'Guinée', 'gw': 'Guinée-Bissau', 'gq': 'Guinée équatoriale', 'ke': 'Kenya',
-        'ls': 'Lesotho', 'lr': 'Liberia', 'ly': 'Libye', 'mg': 'Madagascar', 'mw': 'Malawi',
-        'ml': 'Mali', 'ma': 'Maroc', 'mu': 'Maurice', 'mr': 'Mauritanie', 'mz': 'Mozambique',
-        'na': 'Namibie', 'ne': 'Niger', 'ng': 'Nigeria', 'ug': 'Ouganda', 'rw': 'Rwanda',
-        'st': 'Sao Tomé-et-Principe', 'sn': 'Sénégal', 'sc': 'Seychelles', 'sl': 'Sierra Leone',
-        'so': 'Somalie', 'ss': 'Soudan du Sud', 'sd': 'Soudan', 'tz': 'Tanzanie', 'tg': 'Togo',
-        'tn': 'Tunisie', 'zm': 'Zambie', 'zw': 'Zimbabwe',
-        'af': 'Afghanistan', 'sa': 'Arabie Saoudite', 'am': 'Arménie', 'az': 'Azerbaïdjan',
-        'bh': 'Bahreïn', 'bd': 'Bangladesh', 'bt': 'Bhoutan', 'mm': 'Myanmar', 'bn': 'Brunei',
-        'kh': 'Cambodge', 'cn': 'Chine', 'cy': 'Chypre', 'kr': 'Corée du Sud', 'kp': 'Corée du Nord',
-        'ae': 'Émirats Arabes Unis', 'ge': 'Géorgie', 'in': 'Inde', 'id': 'Indonésie',
-        'ir': 'Iran', 'iq': 'Irak', 'il': 'Israël', 'jp': 'Japon', 'jo': 'Jordanie',
-        'kz': 'Kazakhstan', 'kg': 'Kirghizistan', 'kw': 'Koweït', 'la': 'Laos', 'lb': 'Liban',
-        'my': 'Malaisie', 'mv': 'Maldives', 'mn': 'Mongolie', 'np': 'Népal', 'om': 'Oman',
-        'uz': 'Ouzbékistan', 'pk': 'Pakistan', 'ps': 'Palestine', 'ph': 'Philippines',
-        'qa': 'Qatar', 'lk': 'Sri Lanka', 'sy': 'Syrie', 'tw': 'Taïwan', 'tj': 'Tadjikistan',
-        'th': 'Thaïlande', 'tr': 'Turquie', 'tm': 'Turkménistan', 'vn': 'Viêt Nam', 'ye': 'Yémen',
-        'au': 'Australie', 'fj': 'Fidji', 'ki': 'Kiribati', 'mh': 'Îles Marshall',
-        'fm': 'Micronésie', 'nr': 'Nauru', 'nz': 'Nouvelle-Zélande', 'pw': 'Palaos',
-        'pg': 'Papouasie-Nouvelle-Guinée', 'sb': 'Îles Salomon', 'ws': 'Samoa',
-        'to': 'Tonga', 'tv': 'Tuvalu', 'vu': 'Vanuatu'
+        'fr':'France','de':'Allemagne','es':'Espagne','it':'Italie','pt':'Portugal',
+        'nl':'Pays-Bas','be':'Belgique','ch':'Suisse','at':'Autriche','se':'Suède',
+        'no':'Norvège','dk':'Danemark','fi':'Finlande','ie':'Irlande','uk':'Royaume-Uni',
+        'pl':'Pologne','ua':'Ukraine','ru':'Russie','ca':'Canada','us':'États-Unis',
+        'mx':'Mexique','br':'Brésil','ar':'Argentine','co':'Colombie','pe':'Pérou',
+        've':'Venezuela','ht':'Haïti','za':'Afrique du Sud','ng':'Nigeria','ke':'Kenya',
+        'gh':'Ghana','ma':'Maroc','tn':'Tunisie','dz':'Algérie','eg':'Égypte',
+        'cd':'RDC','sd':'Soudan','ss':'Soudan du Sud','td':'Tchad','cg':'République du Congo',
+        'et':'Éthiopie','tz':'Tanzanie','zm':'Zambie','zw':'Zimbabwe','au':'Australie',
+        'nz':'Nouvelle-Zélande','in':'Inde','pk':'Pakistan','bd':'Bangladesh','lk':'Sri Lanka',
+        'th':'Thaïlande','vn':'Viêt Nam','kh':'Cambodge','la':'Laos','mm':'Myanmar',
+        'cn':'Chine','jp':'Japon','kr':'Corée du Sud','id':'Indonésie','my':'Malaisie',
+        'ph':'Philippines','ye':'Yémen','af':'Afghanistan','ir':'Iran','sa':'Arabie Saoudite',
+        'ae':'Émirats Arabes Unis','sy':'Syrie','iq':'Irak','ly':'Libye','lb':'Liban'
     };
 
     // ============================================================
-    // LOGIQUE PRINCIPALE
+    // 3. LOGIQUE PRINCIPALE
     // ============================================================
+    let dernierConseil = '';
+
     document.getElementById('obtenirConseil').addEventListener('click', function() {
-        const paysSelect = document.getElementById('pays');
-        const codePays = paysSelect.value;
-        const paysNom = nomsPays[codePays] || paysSelect.options[paysSelect.selectedIndex]?.text || 'Pays non reconnu';
+        const codePays = document.getElementById('pays').value;
+        const paysNom = nomsPays[codePays] || 'Pays non reconnu';
         const age = document.getElementById('age').value || 'Non renseigné';
         const sexe = document.getElementById('sexe').value || 'Non précisé';
-        const symptomesSelect = document.getElementById('symptomes');
-        const symptome = symptomesSelect.value;
-        const symptomeNom = symptomesSelect.options[symptomesSelect.selectedIndex]?.text || 'Non précisé';
+        const symptome = document.getElementById('symptomes').value;
+        const symptomeNom = document.getElementById('symptomes').options[document.getElementById('symptomes').selectedIndex]?.text || 'Non précisé';
         const description = document.getElementById('description').value || 'Aucune description';
 
-        if (!codePays) {
-            alert('Veuillez sélectionner un pays.');
-            return;
-        }
+        if (!codePays) { alert('Veuillez sélectionner un pays.'); return; }
 
-        // Données épidémiologiques (par défaut : risque faible)
         const dataEpi = epidemiologie[codePays] || { risque: 'faible', alerte: '✅ Situation épidémiologique stable.' };
 
         let conseil = '';
@@ -562,65 +497,42 @@
         conseil += '📝 Description : ' + description + '\n';
         conseil += '═'.repeat(44) + '\n\n';
 
-        // 1. ALERTE ÉPIDÉMIOLOGIQUE
         conseil += '📊 SITUATION ÉPIDÉMIOLOGIQUE (' + paysNom + ')\n';
         conseil += dataEpi.alerte + '\n\n';
 
-        // 2. CONSEIL SPÉCIFIQUE AU SYMPTÔME
         if (symptome && conseilsSymptomes[symptome]) {
             conseil += '💡 CONSEIL SPÉCIFIQUE\n';
             conseil += conseilsSymptomes[symptome] + '\n\n';
         }
 
-        // 3. RECOMMANDATIONS PAR RISQUE
         conseil += '📋 RECOMMANDATIONS GÉNÉRALES\n';
         if (dataEpi.risque === 'élevé') {
             conseil += '🔴 RISQUE ÉLEVÉ – Vigilance maximale.\n';
             conseil += '   • Consultez un médecin sans délai.\n';
-            conseil += '   • En cas de diarrhée aqueuse, hydratez-vous et consultez.\n';
-            conseil += '   • Évitez l\'automédication (paludisme, choléra).\n';
+            conseil += '   • En cas de diarrhée aqueuse, hydratez-vous.\n';
         } else if (dataEpi.risque === 'modéré') {
             conseil += '🟡 RISQUE MODÉRÉ – Restez attentif.\n';
             conseil += '   • Consultez si les symptômes persistent > 48h.\n';
-            conseil += '   • En zone vectorielle, protégez-vous des piqûres.\n';
         } else {
             conseil += '🟢 RISQUE FAIBLE – Situation stable.\n';
             conseil += '   • Suivez les recommandations habituelles.\n';
-            conseil += '   • Consultez si les symptômes s\'aggravent.\n';
         }
 
-        // 4. ALERTE VECTORIELLE (chikungunya/dengue)
         if (paysVectoriels.includes(codePays)) {
-            conseil += '\n🦟 ALERTE VECTORIELLE :\n';
-            conseil += '   • Protégez-vous des moustiques (vêtements longs, répulsifs).\n';
-            conseil += '   • Éliminez les eaux stagnantes autour de votre domicile.\n';
+            conseil += '\n🦟 ALERTE VECTORIELLE :\n   • Protégez-vous des moustiques.\n';
         }
-
-        // 5. ALERTE CHOLÉRA
         if (paysCholera.includes(codePays)) {
-            conseil += '\n💧 ALERTE CHOLÉRA :\n';
-            conseil += '   • Buvez uniquement de l\'eau potable ou bouillie.\n';
-            conseil += '   • Lavez-vous les mains régulièrement.\n';
-            conseil += '   • En cas de diarrhée aqueuse sévère → URGENCE.\n';
+            conseil += '\n💧 ALERTE CHOLÉRA :\n   • Buvez de l\'eau potable.\n   • Lavez-vous les mains.\n';
         }
-
-        // 6. ALERTE PALUDISME
         if (paysPaludisme.includes(codePays)) {
-            conseil += '\n🦟 ALERTE PALUDISME :\n';
-            conseil += '   • Protection anti-moustique indispensable.\n';
-            conseil += '   • En cas de fièvre, consultez rapidement pour un test.\n';
-        }
-
-        // 7. ALERTE CRISE HUMANITAIRE (pays en conflit)
-        if (['sd','ss','ye','af','sy','iq','ua','ly','lb'].includes(codePays)) {
-            conseil += '\n⚠️ ALERTE CRISE HUMANITAIRE :\n';
-            conseil += '   • Accès aux soins peut être limité.\n';
-            conseil += '   • En cas d\'urgence, contactez les organisations humanitaires locales.\n';
+            conseil += '\n🦟 ALERTE PALUDISME :\n   • Protection anti-moustique.\n   • Consultez en cas de fièvre.\n';
         }
 
         conseil += '\n' + '═'.repeat(44) + '\n';
         conseil += '⚠️ Ce conseil ne remplace pas une consultation médicale.\n';
         conseil += '📞 Urgence : 15 (France) / 911 (Canada/US)';
+
+        dernierConseil = conseil;
 
         const resultatDiv = document.getElementById('conseilResultat');
         resultatDiv.textContent = conseil;
@@ -628,9 +540,105 @@
         resultatDiv.className = '';
         if (dataEpi.risque === 'élevé') resultatDiv.classList.add('urgence');
         else if (dataEpi.risque === 'modéré') resultatDiv.classList.add('alerte');
-
         resultatDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     });
+
+    // ============================================================
+    // 4. EXPORT PDF
+    // ============================================================
+    document.getElementById('exportPDF').addEventListener('click', function() {
+        if (!dernierConseil) {
+            alert('Veuillez d\'abord obtenir un conseil médical.');
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('p', 'mm', 'a4');
+        const lines = doc.splitTextToSize(dernierConseil, 180);
+        doc.setFontSize(10);
+        doc.text(lines, 15, 20);
+        doc.save('conseil_medical_health_ai.pdf');
+    });
+
+    // ============================================================
+    // 5. CARTE INTERACTIVE (Leaflet)
+    // ============================================================
+    let mapInitialized = false;
+    let map = null;
+
+    document.getElementById('toggleCarte').addEventListener('click', function() {
+        const container = document.getElementById('carteContainer');
+        container.classList.toggle('active');
+        
+        if (container.classList.contains('active') && !mapInitialized) {
+            map = L.map('carteContainer').setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap'
+            }).addTo(map);
+
+            // Marqueurs pour les pays à risque
+            const paysRisque = {
+                'cd': { lat: -4.038, lng: 21.759, label: 'RDC - Choléra' },
+                'sd': { lat: 15.500, lng: 32.560, label: 'Soudan - Choléra' },
+                'ss': { lat: 7.862, lng: 29.694, label: 'Soudan du Sud - Choléra' },
+                'td': { lat: 15.454, lng: 18.732, label: 'Tchad - Choléra' },
+                'cg': { lat: -4.263, lng: 15.243, label: 'Congo - Choléra' },
+                'pk': { lat: 30.375, lng: 69.345, label: 'Pakistan - Chikungunya' },
+                'ke': { lat: -1.286, lng: 36.817, label: 'Kenya - Chikungunya' },
+                'br': { lat: -14.235, lng: -51.925, label: 'Brésil - Chikungunya' },
+                'ht': { lat: 18.971, lng: -72.285, label: 'Haïti - Choléra' },
+                'ye': { lat: 15.553, lng: 48.516, label: 'Yémen - Paludisme' },
+                'af': { lat: 33.939, lng: 67.710, label: 'Afghanistan - Paludisme' },
+                'et': { lat: 9.145, lng: 40.490, label: 'Éthiopie - Choléra' },
+                'tz': { lat: -6.369, lng: 34.889, label: 'Tanzanie - Choléra' },
+                'zm': { lat: -13.134, lng: 27.849, label: 'Zambie - Choléra' },
+                'zw': { lat: -19.015, lng: 29.155, label: 'Zimbabwe - Choléra' },
+                'so': { lat: 5.152, lng: 46.200, label: 'Somalie - Chikungunya' },
+                'mu': { lat: -20.348, lng: 57.552, label: 'Maurice - Chikungunya' },
+                'in': { lat: 20.594, lng: 78.963, label: 'Inde - Chikungunya' },
+                'bd': { lat: 23.685, lng: 90.356, label: 'Bangladesh - Chikungunya' },
+                'lk': { lat: 7.873, lng: 80.772, label: 'Sri Lanka - Chikungunya' },
+                'th': { lat: 15.870, lng: 100.993, label: 'Thaïlande - Chikungunya' },
+                'id': { lat: -0.789, lng: 113.921, label: 'Indonésie - Risque vectoriel' },
+                'ph': { lat: 12.880, lng: 121.774, label: 'Philippines - Risque vectoriel' },
+                'vn': { lat: 14.058, lng: 108.277, label: 'Viêt Nam - Paludisme' },
+                'kh': { lat: 12.565, lng: 104.991, label: 'Cambodge - Paludisme' },
+                'la': { lat: 19.856, lng: 102.495, label: 'Laos - Paludisme' },
+                'mm': { lat: 21.914, lng: 95.956, label: 'Myanmar - Paludisme' },
+                'sy': { lat: 34.802, lng: 38.997, label: 'Syrie - Crise humanitaire' },
+                'iq': { lat: 33.223, lng: 43.679, label: 'Irak - Crise humanitaire' },
+            };
+
+            // Couleurs par risque
+            const couleurs = {
+                'élevé': 'red',
+                'modéré': 'orange',
+                'faible': 'green'
+            };
+
+            for (const [code, data] of Object.entries(paysRisque)) {
+                const epi = epidemiologie[code] || { risque: 'faible' };
+                const couleur = couleurs[epi.risque] || 'blue';
+                L.circleMarker([data.lat, data.lng], {
+                    radius: 10,
+                    color: couleur,
+                    fillColor: couleur,
+                    fillOpacity: 0.6,
+                    weight: 2
+                }).addTo(map)
+                .bindPopup(`<b>${data.label}</b><br>Risque: ${epi.risque || 'inconnu'}`);
+            }
+
+            mapInitialized = true;
+        } else if (container.classList.contains('active') && mapInitialized) {
+            setTimeout(() => map.invalidateSize(), 300);
+        }
+    });
+
+    // ============================================================
+    // 6. INITIALISATION
+    // ============================================================
+    switchLang('fr');
 </script>
 
 </body>
